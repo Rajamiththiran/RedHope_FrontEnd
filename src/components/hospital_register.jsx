@@ -1,16 +1,15 @@
 import { useState } from "react";
-import DecoratorSvg from "../assets/svg/DecoratorSvg";
+import HospitalDecoratorSvg from "../assets/svg/HospitalDecoratorSvg";
 import Button from "./button";
 
-const DonorRegister = () => {
+const HospitalRegister = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    address: "",
-    country_code: "",
     phone_number: "",
-    blood_type: "",
+    country_code: "",
+    address: "",
   });
 
   const handleChange = (e) => {
@@ -26,39 +25,29 @@ const DonorRegister = () => {
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between min-h-screen bg-white">
       <div className="w-full lg:w-2/5 p-4 md:p-8 lg:p-12">
-        <DecoratorSvg className="w-full h-auto" />
+        <HospitalDecoratorSvg className="w-full h-auto" />
       </div>
       <div className="w-full lg:w-3/5 p-4 md:p-8 lg:p-12 flex justify-center items-center">
         <div className="bg-white rounded-lg shadow-md p-6 md:p-8 w-full max-w-xl lg:max-w-2xl">
           <h2 className="text-3xl font-bold text-center mb-4">
-            Make it Different as Donor
+            Register Your Hospital »
           </h2>
           <p className="text-center mb-6 text-n-3">
-            Already have an account?{" "}
-            <a href="/login" className="text-color-1 hover:underline">
+            Already registered?{" "}
+            <a href="/hospital-login" className="text-color-1 hover:underline">
               Login
             </a>
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
-                label="Name"
+                label="Hospital Name"
                 id="name"
                 type="text"
                 required
                 onChange={handleChange}
                 value={formData.name}
               />
-              <InputField
-                label="Blood Type"
-                id="blood_type"
-                type="text"
-                required
-                onChange={handleChange}
-                value={formData.blood_type}
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Email"
                 id="email"
@@ -67,6 +56,8 @@ const DonorRegister = () => {
                 onChange={handleChange}
                 value={formData.email}
               />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Password"
                 id="password"
@@ -75,24 +66,6 @@ const DonorRegister = () => {
                 required
                 onChange={handleChange}
                 value={formData.password}
-              />
-            </div>
-            <InputField
-              label="Address"
-              id="address"
-              type="text"
-              required
-              onChange={handleChange}
-              value={formData.address}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InputField
-                label="Country Code"
-                id="country_code"
-                type="text"
-                required
-                onChange={handleChange}
-                value={formData.country_code}
               />
               <InputField
                 label="Phone Number"
@@ -103,8 +76,26 @@ const DonorRegister = () => {
                 value={formData.phone_number}
               />
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InputField
+                label="Country Code"
+                id="country_code"
+                type="text"
+                required
+                onChange={handleChange}
+                value={formData.country_code}
+              />
+              <InputField
+                label="Address"
+                id="address"
+                type="text"
+                required
+                onChange={handleChange}
+                value={formData.address}
+              />
+            </div>
             <Button className="w-full mt-4" type="submit">
-              Create Account
+              Register Hospital
             </Button>
           </form>
         </div>
@@ -139,4 +130,4 @@ const InputField = ({
   </div>
 );
 
-export default DonorRegister;
+export default HospitalRegister;
