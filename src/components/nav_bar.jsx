@@ -17,8 +17,7 @@ const NavBar = () => {
   };
 
   const handleRegisterHospital = () => {
-    // TODO: Implement hospital registration
-    console.log("Register as Hospital clicked");
+    navigate("/hospital-register");
   };
 
   const handleLogoClick = () => {
@@ -37,6 +36,7 @@ const NavBar = () => {
           <span className="text-green-500">Hope</span>
         </span>
       </div>
+
       {/* Hamburger menu for mobile */}
       <button className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
         <svg
@@ -54,6 +54,7 @@ const NavBar = () => {
           />
         </svg>
       </button>
+
       {/* Navigation links */}
       <div
         className={`w-full lg:flex lg:items-center lg:w-auto ${
