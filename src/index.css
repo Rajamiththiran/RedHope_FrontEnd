@@ -20,6 +20,19 @@
 @layer base {
   body {
     @apply font-sans bg-white text-black text-base;
+    /* @apply font-sans bg-n-8 text-n-1 text-base; */
+  }
+}
+
+@layer utilities {
+  .transition-default {
+    @apply transition-all duration-300 ease-in-out;
+  }
+}
+
+@layer components {
+  .container {
+    @apply mx-auto px-4;
   }
 }
 
