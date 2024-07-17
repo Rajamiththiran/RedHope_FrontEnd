@@ -8,8 +8,7 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   const handleRequestBlood = () => {
-    // TODO: Implement request blood functionality
-    console.log("Request Blood clicked");
+    navigate("/request-blood");
   };
 
   const handleRegisterDonor = () => {

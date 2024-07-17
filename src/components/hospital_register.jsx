@@ -28,7 +28,7 @@ const HospitalRegister = () => {
         <HospitalDecoratorSvg className="w-full h-auto" />
       </div>
       <div className="w-full lg:w-3/5 p-4 md:p-8 lg:p-12 flex justify-center items-center">
-        <div className="bg-white rounded-lg shadow-md p-6 md:p-8 w-full max-w-xl lg:max-w-2xl">
+        <div className="bg-white rounded-lg shadow-xl p-6 md:p-8 w-full max-w-xl lg:max-w-2xl">
           <h2 className="text-3xl font-bold text-center mb-4">
             Register Your Hospital »
           </h2>
