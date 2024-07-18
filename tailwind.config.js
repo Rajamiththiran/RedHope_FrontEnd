@@ -81,6 +81,23 @@ export default {
         "benefit-card-5": "url(assets/benefits/card-5.svg)",
         "benefit-card-6": "url(assets/benefits/card-6.svg)",
       },
+      animation: {
+        float: "float 10s ease-in-out infinite",
+        "float-delay-1": "float 13s 1s ease-in-out infinite",
+        "float-delay-2": "float 16s 2s ease-in-out infinite",
+        draw: "draw 5s ease-in-out infinite",
+      },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(20px)" },
+        },
+        draw: {
+          "0%": { strokeDasharray: "0 1200", strokeDashoffset: "0" },
+          "50%": { strokeDasharray: "1200 0", strokeDashoffset: "0" },
+          "100%": { strokeDasharray: "1200 0", strokeDashoffset: "-1200" },
+        },
+      },
     },
   },
   plugins: [
