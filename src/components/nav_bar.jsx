@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoSvg from "../assets/svg/LogoSvg";
 import Button from "./button";
@@ -7,26 +7,24 @@ const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleRequestBlood = () => {
-    navigate("/request-blood");
-  };
+  const handleNavigation = useCallback(
+    (path) => {
+      document.body.classList.add("page-exit");
+      setTimeout(() => {
+        navigate(path);
+        document.body.classList.remove("page-exit");
+      }, 300); // Adjust this timing to match your transition duration
+    },
+    [navigate]
+  );
 
-  const handleRegisterDonor = () => {
-    navigate("/donor-register");
-  };
-
-  const handleRegisterHospital = () => {
-    navigate("/hospital-register");
-  };
-
-  const handleLogoClick = () => {
-    navigate("/");
-  };
+  const handleRequestBlood = () => handleNavigation("/request-blood");
+  const handleLogoClick = () => handleNavigation("/");
 
   return (
     <nav className="flex flex-wrap items-center justify-between p-4 bg-white shadow-md">
       <div
-        className="flex items-center space-x-2 cursor-pointer"
+        className="flex items-center space-x-2 cursor-pointer transition-page"
         onClick={handleLogoClick}
       >
         <LogoSvg className="w-8 h-8" />
@@ -62,22 +60,10 @@ const NavBar = () => {
       >
         <div className="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4 mt-4 lg:mt-0">
           <Button
-            className="text-black w-full lg:w-auto"
+            className="text-black w-full lg:w-auto transition-page"
             onClick={handleRequestBlood}
           >
             Request Blood
-          </Button>
-          <Button
-            className="text-black w-full lg:w-auto"
-            onClick={handleRegisterDonor}
-          >
-            Register as Donor
-          </Button>
-          <Button
-            className="text-black w-full lg:w-auto"
-            onClick={handleRegisterHospital}
-          >
-            Register as Hospital
           </Button>
         </div>
       </div>
