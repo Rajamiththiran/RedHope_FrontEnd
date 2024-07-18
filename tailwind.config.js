@@ -82,21 +82,44 @@ export default {
         "benefit-card-6": "url(assets/benefits/card-6.svg)",
       },
       animation: {
-        float: "float 10s ease-in-out infinite",
-        "float-delay-1": "float 13s 1s ease-in-out infinite",
-        "float-delay-2": "float 16s 2s ease-in-out infinite",
+        float: "float 12s ease-in-out infinite",
+        "float-delay-1": "float 15s 1s ease-in-out infinite",
+        "float-delay-2": "float 18s 2s ease-in-out infinite",
         draw: "draw 5s ease-in-out infinite",
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        bounce: "bounce 1s infinite",
+        spin: "spin 1s linear infinite",
       },
       keyframes: {
         float: {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(20px)" },
+          "50%": { transform: "translateY(25px)" },
         },
         draw: {
           "0%": { strokeDasharray: "0 1200", strokeDashoffset: "0" },
           "50%": { strokeDasharray: "1200 0", strokeDashoffset: "0" },
           "100%": { strokeDasharray: "1200 0", strokeDashoffset: "-1200" },
         },
+        pulse: {
+          "0%, 100%": { opacity: 1 },
+          "50%": { opacity: 0.5 },
+        },
+        bounce: {
+          "0%, 100%": {
+            transform: "translateY(-25%)",
+            animationTimingFunction: "cubic-bezier(0.8,0,1,1)",
+          },
+          "50%": {
+            transform: "none",
+            animationTimingFunction: "cubic-bezier(0,0,0.2,1)",
+          },
+        },
+        spin: {
+          to: { transform: "rotate(360deg)" },
+        },
+      },
+      boxShadow: {
+        neon: '0 0 5px theme("colors.color.1"), 0 0 20px theme("colors.color.1")',
       },
     },
   },
@@ -152,6 +175,9 @@ export default {
       addUtilities({
         ".tap-highlight-color": {
           "-webkit-tap-highlight-color": "rgba(0, 0, 0, 0)",
+        },
+        ".glassmorphism": {
+          "@apply bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg": {},
         },
       });
     }),
