@@ -28,12 +28,36 @@
   .transition-default {
     @apply transition-all duration-300 ease-in-out;
   }
+
+  .transition-page {
+    @apply transition-all duration-500 ease-in-out;
+  }
 }
 
 @layer components {
   .container {
     @apply mx-auto px-4;
   }
+}
+
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 
 .rotate-45 {
