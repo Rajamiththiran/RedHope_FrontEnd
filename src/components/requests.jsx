@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "./button"; // Adjust the import path as needed
 
 const Request = () => {
+  const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState({
     requester_name: "",
     requester_email: "",
@@ -14,6 +15,10 @@ const Request = () => {
     location: "",
   });
 
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -25,89 +30,95 @@ const Request = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-screen">
-      <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-2xl">
-        <h2 className="text-3xl font-bold text-center mb-4">Request Blood</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex space-x-4">
+    <div
+      className={`transition-page ${
+        isVisible ? "page-enter-active" : "page-enter"
+      }`}
+    >
+      <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-screen">
+        <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-2xl">
+          <h2 className="text-3xl font-bold text-center mb-4">Request Blood</h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex space-x-4">
+              <InputField
+                label="Requester Name"
+                id="requester_name"
+                type="text"
+                required
+                onChange={handleChange}
+                className="flex-1"
+              />
+              <InputField
+                label="Requester Email"
+                id="requester_email"
+                type="email"
+                required
+                onChange={handleChange}
+                className="flex-1"
+              />
+            </div>
             <InputField
-              label="Requester Name"
-              id="requester_name"
+              label="Request Date"
+              id="request_date"
+              type="datetime-local"
+              required
+              onChange={handleChange}
+            />
+            <div className="flex space-x-4">
+              <InputField
+                label="Country Code"
+                id="country_code"
+                type="text"
+                required
+                onChange={handleChange}
+                className="flex-1"
+              />
+              <InputField
+                label="Phone Number"
+                id="phone_number"
+                type="tel"
+                required
+                onChange={handleChange}
+                className="flex-1"
+              />
+            </div>
+            <div className="flex space-x-4">
+              <InputField
+                label="Blood Type Requested"
+                id="blood_type_requested"
+                type="text"
+                required
+                onChange={handleChange}
+                className="flex-1"
+              />
+              <InputField
+                label="Urgency Level"
+                id="urgency_level"
+                type="text"
+                required
+                onChange={handleChange}
+                className="flex-1"
+              />
+            </div>
+            <InputField
+              label="Description"
+              id="description"
+              type="textarea"
+              required
+              onChange={handleChange}
+            />
+            <InputField
+              label="Location"
+              id="location"
               type="text"
               required
               onChange={handleChange}
-              className="flex-1"
             />
-            <InputField
-              label="Requester Email"
-              id="requester_email"
-              type="email"
-              required
-              onChange={handleChange}
-              className="flex-1"
-            />
-          </div>
-          <InputField
-            label="Request Date"
-            id="request_date"
-            type="datetime-local"
-            required
-            onChange={handleChange}
-          />
-          <div className="flex space-x-4">
-            <InputField
-              label="Country Code"
-              id="country_code"
-              type="text"
-              required
-              onChange={handleChange}
-              className="flex-1"
-            />
-            <InputField
-              label="Phone Number"
-              id="phone_number"
-              type="tel"
-              required
-              onChange={handleChange}
-              className="flex-1"
-            />
-          </div>
-          <div className="flex space-x-4">
-            <InputField
-              label="Blood Type Requested"
-              id="blood_type_requested"
-              type="text"
-              required
-              onChange={handleChange}
-              className="flex-1"
-            />
-            <InputField
-              label="Urgency Level"
-              id="urgency_level"
-              type="text"
-              required
-              onChange={handleChange}
-              className="flex-1"
-            />
-          </div>
-          <InputField
-            label="Description"
-            id="description"
-            type="textarea"
-            required
-            onChange={handleChange}
-          />
-          <InputField
-            label="Location"
-            id="location"
-            type="text"
-            required
-            onChange={handleChange}
-          />
-          <Button className="w-full" type="submit">
-            Submit Request
-          </Button>
-        </form>
+            <Button className="w-full" type="submit">
+              Submit Request
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );
