@@ -32,12 +32,32 @@
   .transition-page {
     @apply transition-all duration-500 ease-in-out;
   }
+
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  .transition-transform {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
 }
 
 @layer components {
   .container {
     @apply mx-auto px-4;
   }
+}
+
+.hover-scale {
+  @apply transition-transform hover:scale-105;
+}
+
+.hover-brightness {
+  @apply transition-all hover:brightness-110;
 }
 
 .page-enter {

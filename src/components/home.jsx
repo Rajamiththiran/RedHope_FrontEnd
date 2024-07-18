@@ -1,15 +1,7 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import BloodCell from "./BloodCell";
 import Button from "./button";
-
-const BloodCell = ({ className }) => (
-  <svg
-    className={`w-12 h-12 text-red-500 opacity-20 ${className}`}
-    viewBox="0 0 100 100"
-  >
-    <circle cx="50" cy="50" r="40" fill="currentColor" />
-  </svg>
-);
 
 const Home = () => {
   const navigate = useNavigate();
@@ -20,11 +12,12 @@ const Home = () => {
       setTimeout(() => {
         navigate(path);
         document.body.classList.remove("page-exit");
-      }, 300); // Adjust this timing to match your transition duration
+      }, 300);
     },
     [navigate]
   );
 
+  const handleLogin = () => handleNavigation("/login");
   const handleRegisterDonor = () => handleNavigation("/donor-register");
   const handleRegisterHospital = () => handleNavigation("/hospital-register");
 
@@ -37,23 +30,44 @@ const Home = () => {
         <BloodCell className="absolute top-1/3 right-1/3 animate-float" />
         <BloodCell className="absolute bottom-1/3 left-1/4 animate-float-delay-1" />
         <BloodCell className="absolute top-2/3 right-1/2 animate-float-delay-2" />
+
+        <BloodCell className="absolute top-1/6 left-1/6 animate-float-delay-1" />
+        <BloodCell className="absolute top-3/4 right-1/6 animate-float" />
+        <BloodCell className="absolute bottom-1/6 left-3/4 animate-float-delay-2" />
+        <BloodCell className="absolute top-2/5 right-2/5 animate-float-delay-1" />
+        <BloodCell className="absolute bottom-2/5 left-3/5 animate-float" />
+        <BloodCell className="absolute top-5/6 right-1/3 animate-float-delay-2" />
+        <BloodCell className="absolute top-1/8 left-2/3 animate-float" />
+        <BloodCell className="absolute bottom-1/2 right-3/4 animate-float-delay-1" />
+        <BloodCell className="absolute top-3/5 left-1/5 animate-float-delay-2" />
       </div>
-      <div className="relative container mx-auto px-4 py-8 z-10">
-        <h1 className="text-4xl font-bold text-center mb-8 text-red-600">
+      <div className="relative container mx-auto px-4 py-12 z-10">
+        <h1 className="h1 text-center mb-6 text-red-600 ">
           Welcome to RedHope
         </h1>
-        <p className="text-xl text-center mb-12 text-gray-700">
+        <p className="body-1 text-center mb-12 text-gray-700">
           Join our community and make a difference in someone`s life today.
+        </p>
+        <div className="flex flex-col items-center space-y-6 mb-12">
+          <Button
+            className="bg-red-100 hover:bg-red-100 text-black w-full md:w-auto transition-page hover-scale glassmorphism "
+            onClick={handleLogin}
+          >
+            Login
+          </Button>
+        </div>
+        <p className="text-center mb-6 text-gray-600 ">
+          If you haven`t got an account,
         </p>
         <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 justify-center">
           <Button
-            className="bg-red-500 hover:bg-red-600 text-white w-full md:w-auto transition-page"
+            className="bg-red-100 hover:bg-red-100 text-black w-full md:w-auto transition-page hover-scale glassmorphism"
             onClick={handleRegisterDonor}
           >
             Register as Donor
           </Button>
           <Button
-            className="bg-blue-500 hover:bg-blue-600 text-white w-full md:w-auto transition-page"
+            className="bg-red-100 hover:bg-red-100 text-black w-full md:w-auto transition-page hover-scale glassmorphism"
             onClick={handleRegisterHospital}
           >
             Register as Hospital
