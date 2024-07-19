@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import HospitalDecoratorSvg from "../assets/svg/HospitalDecoratorSvg";
 import Button from "./button";
 
@@ -34,9 +35,9 @@ const HospitalRegister = () => {
           </h2>
           <p className="text-center mb-6 text-n-3">
             Already registered?{" "}
-            <a href="/hospital-login" className="text-color-1 hover:underline">
+            <Link to="/login" className="text-color-1 hover:underline">
               Login
-            </a>
+            </Link>
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
