@@ -9,7 +9,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    userType: "donor", // Default to donor
+    userType: "donor",
   });
   const [error, setError] = useState("");
 
