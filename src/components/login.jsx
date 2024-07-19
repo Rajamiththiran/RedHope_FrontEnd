@@ -1,22 +1,40 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import loginBg from "../assets/photos/loginbg.png"; // Adjust the import path as needed
+import { Link, useNavigate } from "react-router-dom";
+import loginBg from "../assets/photos/loginbg.png";
+//import { loginDonor, loginHospital } from "../authService";
 import Button from "./button";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    userType: "donor", // Default to donor
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle login logic here
-    console.log(formData);
+    setError("");
+    try {
+      let response;
+      if (formData.userType === "donor") {
+        response = await loginDonor(formData.email, formData.password);
+      } else {
+        response = await loginHospital(formData.email, formData.password);
+      }
+      console.log("Login successful", response);
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("userType", formData.userType);
+      navigate("/dashboard");
+    } catch (error) {
+      setError("Invalid email or password");
+      console.error("Login failed", error);
+    }
   };
 
   return (
@@ -29,6 +47,24 @@ const Login = () => {
           Login to RedHope
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="userType"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              I am a:
+            </label>
+            <select
+              id="userType"
+              name="userType"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+              value={formData.userType}
+              onChange={handleChange}
+            >
+              <option value="donor">Donor</option>
+              <option value="hospital">Hospital</option>
+            </select>
+          </div>
           <InputField
             label="Email"
             id="email"
@@ -50,8 +86,9 @@ const Login = () => {
             Login
           </Button>
         </form>
+        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
         <p className="mt-4 text-center text-gray-600">
-          Don`t have an account?{" "}
+          Don't have an account?{" "}
           <Link
             to="/"
             className="text-red-500 hover:text-red-700 transition-colors duration-200"
