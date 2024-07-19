@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import HospitalDecoratorSvg from "../assets/svg/HospitalDecoratorSvg";
+import { registerHospital } from "../auth_service";
 import Button from "./button";
 
 const HospitalRegister = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,15 +14,23 @@ const HospitalRegister = () => {
     country_code: "",
     address: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
-    // Handle form submission logic here
+    setError("");
+    try {
+      const response = await registerHospital(formData);
+      console.log("Registration successful", response);
+      navigate("/login");
+    } catch (error) {
+      setError("Registration failed. Please try again.");
+      console.error("Registration error:", error);
+    }
   };
 
   return (
@@ -31,7 +41,7 @@ const HospitalRegister = () => {
       <div className="w-full lg:w-3/5 p-4 md:p-8 lg:p-12 flex justify-center items-center">
         <div className="bg-white rounded-lg shadow-xl p-6 md:p-8 w-full max-w-xl lg:max-w-2xl">
           <h2 className="text-3xl font-bold text-center mb-4">
-            Register Your Hospital »
+            Register Your Hospital
           </h2>
           <p className="text-center mb-6 text-n-3">
             Already registered?{" "}
@@ -99,6 +109,7 @@ const HospitalRegister = () => {
               Register Hospital
             </Button>
           </form>
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
         </div>
       </div>
     </div>

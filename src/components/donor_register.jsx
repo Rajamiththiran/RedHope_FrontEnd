@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DecoratorSvg from "../assets/svg/DecoratorSvg";
+import { registerDonor } from "../auth_service";
 import Button from "./button";
 
 const DonorRegister = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,15 +15,23 @@ const DonorRegister = () => {
     phone_number: "",
     blood_type: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
-    // Handle form submission logic here
+    setError("");
+    try {
+      const response = await registerDonor(formData);
+      console.log("Registration successful", response);
+      navigate("/login");
+    } catch (error) {
+      setError("Registration failed. Please try again.");
+      console.error("Registration error:", error);
+    }
   };
 
   return (
@@ -108,6 +118,7 @@ const DonorRegister = () => {
               Create Account
             </Button>
           </form>
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
         </div>
       </div>
     </div>
