@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import loginBg from "../assets/photos/loginbg.png";
-//import { loginDonor, loginHospital } from "../authService";
+import { loginDonor, loginHospital } from "../auth_service";
 import Button from "./button";
 
 const Login = () => {
