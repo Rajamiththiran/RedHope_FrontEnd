@@ -20,6 +20,7 @@ const Home = () => {
   const handleLogin = () => handleNavigation("/login");
   const handleRegisterDonor = () => handleNavigation("/donor-register");
   const handleRegisterHospital = () => handleNavigation("/hospital-register");
+  const handleRequestBlood = () => handleNavigation("/request-blood");
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-red-100 to-white overflow-hidden flex justify-center items-center">
@@ -86,35 +87,64 @@ const Home = () => {
         />
       </div>
 
-      <div className="bg-white bg-opacity-80 rounded-lg shadow-lg p-8 w-full max-w-md z-10">
-        <h1 className="text-3xl font-bold text-center mb-6 text-red-600">
-          Welcome to RedHope
-        </h1>
-        <p className="text-center mb-8 text-gray-700">
-          Join our community and make a difference in someone`s life today.
-        </p>
-        <div className="space-y-4">
-          <Button
-            className="w-full bg-red-500 hover:bg-red-600 text-white transition-all duration-200 ease-in-out transform hover:scale-105"
-            onClick={handleLogin}
-          >
-            Login
-          </Button>
-          <p className="text-center text-gray-600">
-            If you haven`t got an account:
-          </p>
-          <Button
-            className="w-full bg-red-100 hover:bg-red-200 text-red-700 transition-all duration-200 ease-in-out transform hover:scale-105"
-            onClick={handleRegisterDonor}
-          >
-            Register as Donor
-          </Button>
-          <Button
-            className="w-full bg-red-100 hover:bg-red-200 text-red-700 transition-all duration-200 ease-in-out transform hover:scale-105"
-            onClick={handleRegisterHospital}
-          >
-            Register as Hospital
-          </Button>
+      <div className="flex flex-col md:flex-row justify-center items-stretch space-y-8 md:space-y-0 md:space-x-8 z-10 w-full max-w-6xl px-4">
+        {/* Description Card */}
+        <div className="bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] bg-opacity-80 rounded-lg shadow-lg p-8 w-full md:w-1/2 flex flex-col justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-center mb-6 text-white">
+              RedHope: Connecting Requesters, Donors, and Hospitals for Blood
+              Donation
+            </h1>
+            <p className="text-center mb-6 text-white">
+              RedHope is a web-based platform that connects requesters, donors,
+              and hospitals for seamless blood donation. Requesters can request
+              blood without logging in or registering. Donors and hospitals can
+              register to track their activities and contributions.
+            </p>
+          </div>
+          <div className="text-center">
+            <Button
+              className="from-[#5b5b5b] text-white transition-all duration-200 ease-in-out transform hover:scale-105"
+              onClick={handleRequestBlood}
+            >
+              Request Blood
+            </Button>
+          </div>
+        </div>
+
+        {/* Login and Register Card */}
+        <div className="bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] bg-opacity-80 rounded-lg shadow-lg p-8 w-full md:w-1/2 flex flex-col justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-center mb-6 text-white">
+              Join RedHope
+            </h2>
+            <p className="text-center mb-8 text-white">
+              Join our community and make a difference in someone`s life today.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <Button
+              className="w-full from-[#5b5b5b] text-white transition-all duration-200 ease-in-out transform hover:scale-105"
+              onClick={handleLogin}
+            >
+              Login
+            </Button>
+            <p className="text-center text-white">
+              If you haven`t got an account:
+            </p>
+            <Button
+              className="w-full bg-red-500 text-white hover:bg-red-600 transition-all duration-200 ease-in-out transform hover:scale-105"
+              onClick={handleRegisterDonor}
+            >
+              Register as Donor
+            </Button>
+            <Button
+              className="w-full bg-red-500 text-white hover:bg-red-600 transition-all duration-200 ease-in-out transform hover:scale-105"
+              onClick={handleRegisterHospital}
+            >
+              Register as Hospital
+            </Button>
+          </div>
         </div>
       </div>
     </div>
