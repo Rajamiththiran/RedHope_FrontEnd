@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DecoratorSvg from "../assets/svg/DecoratorSvg";
 import { registerDonor } from "../auth_service";
+import { requestNotificationPermission } from "../config/FirebaseInit";
 import Button from "./button";
 
 const DonorRegister = () => {
@@ -25,9 +26,15 @@ const DonorRegister = () => {
     event.preventDefault();
     setError("");
     try {
-      const response = await registerDonor(formData);
-      console.log("Registration successful", response);
-      navigate("/login");
+      const fcmToken = await requestNotificationPermission();
+      if (fcmToken) {
+        const dataWithToken = { ...formData, fcm_token: fcmToken };
+        const response = await registerDonor(dataWithToken);
+        console.log("Registration successful", response);
+        navigate("/login");
+      } else {
+        setError("Failed to get notification permission. Please try again.");
+      }
     } catch (error) {
       setError("Registration failed. Please try again.");
       console.error("Registration error:", error);

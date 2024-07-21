@@ -21,10 +21,10 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/donor-dashboard" element={<DonorDashboard />} />
         <Route path="/hospital-dashboard" element={<HospitalDashboard />} />
+        <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
       <ButtonGradient />
     </>
   );
 };
-
 export default App;
