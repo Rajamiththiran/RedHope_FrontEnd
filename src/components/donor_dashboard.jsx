@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { getRequestNotifications } from "../api";
+import { useEffect, useState } from "react";
+import { getRequestNotifications } from "../auth_service";
 
 const DonorDashboard = () => {
   const [notifications, setNotifications] = useState([]);
@@ -40,9 +40,7 @@ const DonorDashboard = () => {
                 <p>Blood Type: {notification.blood_type_requested}</p>
                 <p>Urgency: {notification.urgency_level}</p>
                 <p>Location: {notification.location}</p>
-                <p>
-                  Date: {new Date(notification.request_date).toLocaleString()}
-                </p>
+                <p>Requester Phone Number: {notification.phone_number}</p>
               </li>
             ))}
           </ul>

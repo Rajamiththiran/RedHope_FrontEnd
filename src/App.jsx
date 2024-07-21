@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import ButtonGradient from "./assets/svg/ButtonGradient";
 import DonorDashboard from "./components/donor_dashboard";
@@ -9,8 +10,27 @@ import Login from "./components/login";
 import NavBar from "./components/nav_bar";
 import Notification from "./components/Notification";
 import Request from "./components/requests";
+import {
+  requestNotificationPermission,
+  showTestNotification,
+} from "./config/FirebaseInit";
 
 const App = () => {
+  useEffect(() => {
+    const setupNotifications = async () => {
+      await requestNotificationPermission();
+      console.log("Notification permission setup complete");
+
+      // Show a test notification after a short delay
+      setTimeout(() => {
+        console.log("Triggering test notification");
+        showTestNotification();
+      }, 5000); // 5 seconds delay
+    };
+
+    setupNotifications();
+  }, []);
+
   return (
     <>
       <NavBar />

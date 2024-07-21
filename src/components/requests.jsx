@@ -12,15 +12,13 @@ const Request = () => {
     phone_number: "",
     country_code: "",
     location: "",
-    request_date: "",
     description: "",
   });
-  const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState("");
-  const [isVisible, setIsVisible] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    setIsVisible(true);
     fetchNotifications();
   }, []);
 
@@ -29,8 +27,7 @@ const Request = () => {
       const data = await getRequestNotifications();
       setNotifications(data);
     } catch (err) {
-      setError("Failed to fetch notifications");
-      console.error(err);
+      console.error("Failed to fetch notifications:", err);
     }
   };
 
@@ -41,10 +38,14 @@ const Request = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    setSuccess("");
     try {
-      const response = await createBloodRequest(formData);
+      const response = await createBloodRequest({
+        ...formData,
+        request_date: new Date().toISOString(),
+      });
       console.log("Request created successfully", response);
-      // Clear form or show success message
+      setSuccess("Blood request created successfully");
       setFormData({
         requester_name: "",
         requester_email: "",
@@ -53,11 +54,9 @@ const Request = () => {
         phone_number: "",
         country_code: "",
         location: "",
-        request_date: "",
         description: "",
       });
-      // Fetch updated notifications
-      fetchNotifications();
+      fetchNotifications(); // Fetch updated notifications after successful request
     } catch (error) {
       setError("Failed to create request. Please try again.");
       console.error("Request creation error:", error);
@@ -73,15 +72,8 @@ const Request = () => {
         <BloodCell className="absolute top-1/3 right-1/3 animate-float" />
         <BloodCell className="absolute bottom-1/3 left-1/4 animate-float-delay-1" />
         <BloodCell className="absolute top-2/3 right-1/2 animate-float-delay-2" />
-        <BloodCell className="absolute top-1/6 left-1/6 animate-float-delay-1" />
-        <BloodCell className="absolute top-3/4 right-1/6 animate-float" />
-        <BloodCell className="absolute bottom-1/6 left-3/4 animate-float-delay-2" />
       </div>
-      <div
-        className={`relative z-10 transition-page ${
-          isVisible ? "page-enter-active" : "page-enter"
-        }`}
-      >
+      <div className="relative z-10">
         <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-screen">
           <div className="bg-white bg-opacity-90 rounded-lg shadow-lg p-8 w-full max-w-2xl">
             <h2 className="text-3xl font-bold text-center mb-4 text-red-600">
@@ -110,10 +102,20 @@ const Request = () => {
                 <InputField
                   label="Blood Type Requested"
                   id="blood_type_requested"
-                  type="text"
+                  type="select"
                   required
                   onChange={handleChange}
                   value={formData.blood_type_requested}
+                  options={[
+                    { value: "A+", label: "A+" },
+                    { value: "A-", label: "A-" },
+                    { value: "B+", label: "B+" },
+                    { value: "B-", label: "B-" },
+                    { value: "O+", label: "O+" },
+                    { value: "O-", label: "O-" },
+                    { value: "AB+", label: "AB+" },
+                    { value: "AB-", label: "AB-" },
+                  ]}
                 />
                 <InputField
                   label="Urgency Level"
@@ -156,14 +158,6 @@ const Request = () => {
                 value={formData.location}
               />
               <InputField
-                label="Request Date"
-                id="request_date"
-                type="datetime-local"
-                required
-                onChange={handleChange}
-                value={formData.request_date}
-              />
-              <InputField
                 label="Description"
                 id="description"
                 type="textarea"
@@ -175,18 +169,8 @@ const Request = () => {
               </Button>
             </form>
             {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-
-            <h3 className="text-xl font-bold mt-8 mb-4">Notifications</h3>
-            {notifications.length > 0 ? (
-              <ul className="space-y-2">
-                {notifications.map((notification, index) => (
-                  <li key={index} className="p-2 bg-red-100 rounded">
-                    {notification.message}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No notifications</p>
+            {success && (
+              <p className="text-green-500 text-center mt-4">{success}</p>
             )}
           </div>
         </div>
