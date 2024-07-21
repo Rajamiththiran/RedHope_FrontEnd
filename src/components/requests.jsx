@@ -1,33 +1,67 @@
 import { useEffect, useState } from "react";
-import BloodCell from "./BloodCell"; // Make sure to import the BloodCell component
-import Button from "./button"; // Adjust the import path as needed
+import { createBloodRequest, getRequestNotifications } from "../auth_service";
+import BloodCell from "./BloodCell";
+import Button from "./button";
 
 const Request = () => {
-  const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState({
     requester_name: "",
     requester_email: "",
-    request_date: "",
     blood_type_requested: "",
     urgency_level: "",
-    description: "",
     phone_number: "",
     country_code: "",
     location: "",
+    request_date: "",
+    description: "",
   });
+  const [notifications, setNotifications] = useState([]);
+  const [error, setError] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
+    fetchNotifications();
   }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const data = await getRequestNotifications();
+      setNotifications(data);
+    } catch (err) {
+      setError("Failed to fetch notifications");
+      console.error(err);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+    setError("");
+    try {
+      const response = await createBloodRequest(formData);
+      console.log("Request created successfully", response);
+      // Clear form or show success message
+      setFormData({
+        requester_name: "",
+        requester_email: "",
+        blood_type_requested: "",
+        urgency_level: "",
+        phone_number: "",
+        country_code: "",
+        location: "",
+        request_date: "",
+        description: "",
+      });
+      // Fetch updated notifications
+      fetchNotifications();
+    } catch (error) {
+      setError("Failed to create request. Please try again.");
+      console.error("Request creation error:", error);
+    }
   };
 
   return (
@@ -54,14 +88,14 @@ const Request = () => {
               Request Blood
             </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex space-x-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField
                   label="Requester Name"
                   id="requester_name"
                   type="text"
                   required
                   onChange={handleChange}
-                  className="flex-1"
+                  value={formData.requester_name}
                 />
                 <InputField
                   label="Requester Email"
@@ -69,73 +103,91 @@ const Request = () => {
                   type="email"
                   required
                   onChange={handleChange}
-                  className="flex-1"
+                  value={formData.requester_email}
                 />
               </div>
-              <InputField
-                label="Request Date"
-                id="request_date"
-                type="datetime-local"
-                required
-                onChange={handleChange}
-              />
-              <div className="flex space-x-4">
-                <InputField
-                  label="Country Code"
-                  id="country_code"
-                  type="text"
-                  required
-                  onChange={handleChange}
-                  className="flex-1"
-                />
-                <InputField
-                  label="Phone Number"
-                  id="phone_number"
-                  type="tel"
-                  required
-                  onChange={handleChange}
-                  className="flex-1"
-                />
-              </div>
-              <div className="flex space-x-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField
                   label="Blood Type Requested"
                   id="blood_type_requested"
                   type="text"
                   required
                   onChange={handleChange}
-                  className="flex-1"
+                  value={formData.blood_type_requested}
                 />
                 <InputField
                   label="Urgency Level"
                   id="urgency_level"
+                  type="select"
+                  required
+                  onChange={handleChange}
+                  value={formData.urgency_level}
+                  options={[
+                    { value: "low", label: "Low" },
+                    { value: "medium", label: "Medium" },
+                    { value: "high", label: "High" },
+                  ]}
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputField
+                  label="Phone Number"
+                  id="phone_number"
+                  type="tel"
+                  required
+                  onChange={handleChange}
+                  value={formData.phone_number}
+                />
+                <InputField
+                  label="Country Code"
+                  id="country_code"
                   type="text"
                   required
                   onChange={handleChange}
-                  className="flex-1"
+                  value={formData.country_code}
                 />
               </div>
-              <InputField
-                label="Description"
-                id="description"
-                type="textarea"
-                required
-                onChange={handleChange}
-              />
               <InputField
                 label="Location"
                 id="location"
                 type="text"
                 required
                 onChange={handleChange}
+                value={formData.location}
               />
-              <Button
-                className="w-full bg-red-500 hover:bg-red-600 text-white transition-page hover-scale"
-                type="submit"
-              >
+              <InputField
+                label="Request Date"
+                id="request_date"
+                type="datetime-local"
+                required
+                onChange={handleChange}
+                value={formData.request_date}
+              />
+              <InputField
+                label="Description"
+                id="description"
+                type="textarea"
+                onChange={handleChange}
+                value={formData.description}
+              />
+              <Button className="w-full mt-4" type="submit">
                 Submit Request
               </Button>
             </form>
+            {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+
+            <h3 className="text-xl font-bold mt-8 mb-4">Notifications</h3>
+            {notifications.length > 0 ? (
+              <ul className="space-y-2">
+                {notifications.map((notification, index) => (
+                  <li key={index} className="p-2 bg-red-100 rounded">
+                    {notification.message}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No notifications</p>
+            )}
           </div>
         </div>
       </div>
@@ -149,31 +201,50 @@ const InputField = ({
   type,
   required,
   onChange,
-  className = "",
+  value,
+  options,
 }) => (
-  <div className={className}>
+  <div>
     <label
       htmlFor={id}
       className="block text-sm font-medium text-gray-700 mb-1"
     >
       {label}:
     </label>
-    {type === "textarea" ? (
+    {type === "select" ? (
+      <select
+        id={id}
+        name={id}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
+        required={required}
+        onChange={onChange}
+        value={value}
+      >
+        <option value="">Select {label}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    ) : type === "textarea" ? (
       <textarea
         id={id}
         name={id}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
         required={required}
         onChange={onChange}
+        value={value}
       />
     ) : (
       <input
         type={type}
         id={id}
         name={id}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500"
         required={required}
         onChange={onChange}
+        value={value}
       />
     )}
   </div>
