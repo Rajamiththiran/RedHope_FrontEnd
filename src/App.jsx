@@ -7,12 +7,14 @@ import HospitalDashboard from "./components/hospital_dashboard";
 import HospitalRegister from "./components/hospital_register";
 import Login from "./components/login";
 import NavBar from "./components/nav_bar";
+import Notification from "./components/Notification";
 import Request from "./components/requests";
 
 const App = () => {
   return (
     <>
       <NavBar />
+      <Notification />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/donor-register" element={<DonorRegister />} />
@@ -21,10 +23,10 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/donor-dashboard" element={<DonorDashboard />} />
         <Route path="/hospital-dashboard" element={<HospitalDashboard />} />
-        <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
       <ButtonGradient />
     </>
   );
 };
+
 export default App;
