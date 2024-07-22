@@ -88,6 +88,8 @@ const NavBar = () => {
 
   const handleNotificationClick = (notification) => {
     console.log("Clicked notification:", notification);
+    navigate(`/request-details/${notification.id}`);
+    setShowNotifications(false);
   };
 
   return (
@@ -147,9 +149,9 @@ const NavBar = () => {
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10">
                   <div className="py-2 max-h-96 overflow-y-auto">
                     {notifications.length > 0 ? (
-                      notifications.map((notification, index) => (
+                      notifications.map((notification) => (
                         <div
-                          key={index}
+                          key={notification.id}
                           className="px-4 py-3 hover:bg-red-200 bg-red-100 cursor-pointer mb-2 rounded"
                           onClick={() => handleNotificationClick(notification)}
                         >
