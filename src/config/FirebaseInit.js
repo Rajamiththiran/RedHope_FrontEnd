@@ -3,36 +3,46 @@ import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { firebaseConfig } from "./FirebaseConfig";
 
 const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+const messaging = getMessaging(app);
 
-export const requestNotificationPermission = async () => {
-  try {
-    const permission = await Notification.requestPermission();
-    console.log("Notification permission status:", permission);
-    if (permission === "granted") {
-      const token = await getToken(messaging, {
-        vapidKey: import.meta.env.VITE_REACT_APP_FIREBASE_VAPID_KEY,
-      });
-      console.log("FCM Token:", token);
-      return token;
-    } else {
-      console.log("Notification permission denied");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error requesting notification permission:", error);
-    return null;
-  }
+let tokenPromise = null;
+
+export const requestNotificationPermission = () => {
+  if (tokenPromise) return tokenPromise;
+
+  tokenPromise = new Promise((resolve) => {
+    console.log("Requesting notification permission...");
+    Notification.requestPermission().then((permission) => {
+      console.log("Notification permission status:", permission);
+      if (permission === "granted") {
+        getToken(messaging, {
+          vapidKey: import.meta.env.VITE_REACT_APP_FIREBASE_VAPID_KEY,
+        })
+          .then((token) => {
+            console.log("FCM Token:", token);
+            resolve(token);
+          })
+          .catch((error) => {
+            console.error("Error getting token:", error);
+            resolve(null);
+          });
+      } else {
+        console.log("Notification permission denied");
+        resolve(null);
+      }
+    });
+  });
+
+  return tokenPromise;
 };
 
-export const onMessageListener = () => {
-  return new Promise((resolve) => {
+export const onMessageListener = () =>
+  new Promise((resolve) => {
     onMessage(messaging, (payload) => {
       console.log("Received foreground message:", payload);
       resolve(payload);
     });
   });
-};
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker

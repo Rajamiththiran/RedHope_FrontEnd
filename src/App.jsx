@@ -15,8 +15,8 @@ import { requestNotificationPermission } from "./config/FirebaseInit";
 const App = () => {
   useEffect(() => {
     const setupNotifications = async () => {
-      await requestNotificationPermission();
-      console.log("Notification permission setup complete");
+      const permission = await requestNotificationPermission();
+      console.log("Notification permission:", permission);
     };
 
     setupNotifications();

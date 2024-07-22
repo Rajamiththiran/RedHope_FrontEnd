@@ -34,30 +34,29 @@ function initializeFirebase() {
       icon: "/path-to-your-icon.png",
       data: payload.data,
       tag: "blood-request",
-      requireInteraction: true, // This will make the notification persist until user interaction
+      requireInteraction: true,
     };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    return self.registration.showNotification(
+      notificationTitle,
+      notificationOptions
+    );
   });
 }
 
+self.addEventListener("push", function (event) {
+  console.log("[Service Worker] Push Received.");
+  // Handle push event if needed
+});
+
+self.addEventListener("pushsubscriptionchange", function (event) {
+  console.log("[Service Worker] Push Subscription Change.");
+  // Handle subscription change if needed
+});
+
 self.addEventListener("notificationclick", function (event) {
-  console.log("[firebase-messaging-sw.js] Notification click Received.");
+  console.log("[Service Worker] Notification click Received.");
   event.notification.close();
   const url = event.notification.data.url || "/donor-dashboard";
-  event.waitUntil(
-    clients.matchAll({ type: "window" }).then((windowClients) => {
-      // Check if there is already a window/tab open with the target URL
-      for (var i = 0; i < windowClients.length; i++) {
-        var client = windowClients[i];
-        if (client.url === url && "focus" in client) {
-          return client.focus();
-        }
-      }
-      // If no window/tab is already open, open a new one
-      if (clients.openWindow) {
-        return clients.openWindow(url);
-      }
-    })
-  );
+  event.waitUntil(clients.openWindow(url));
 });
