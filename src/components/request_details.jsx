@@ -8,6 +8,7 @@ const RequestDetails = () => {
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isEntering, setIsEntering] = useState(true);
   const { id } = useParams();
   const location = useLocation();
 
@@ -44,6 +45,11 @@ const RequestDetails = () => {
     };
 
     fetchRequestDetails();
+
+    // Trigger entrance animation
+    setIsEntering(true);
+    const timer = setTimeout(() => setIsEntering(false), 100);
+    return () => clearTimeout(timer);
   }, [id, location.state]);
 
   const handleMakeDonation = () => {
@@ -93,7 +99,11 @@ const RequestDetails = () => {
           size={14}
         />
       </div>
-      <div className="relative z-10 w-full max-w-2xl px-4">
+      <div
+        className={`relative z-10 w-full max-w-2xl px-4 transition-all duration-1000 ease-out ${
+          isEntering ? "opacity-0 translate-y-20" : "opacity-100 translate-y-0"
+        }`}
+      >
         <div className="bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] bg-opacity-80 rounded-lg shadow-lg p-8">
           <h2 className="text-3xl font-bold text-white mb-6 font-sans">
             Blood Request Details
@@ -139,7 +149,7 @@ const RequestDetails = () => {
             </p>
           </div>
           <Button
-            className="w-full from-[#5b5b5b] text-white hover:transition-all duration-200 ease-in-out transform hover:scale-105 font-sans"
+            className="w-full bg-red-500 text-white hover:bg-red-600 transition-all duration-200 ease-in-out transform hover:scale-105 font-sans"
             onClick={handleMakeDonation}
           >
             Make Donation History
