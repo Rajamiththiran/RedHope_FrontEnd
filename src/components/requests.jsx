@@ -1,3 +1,5 @@
+// File: root/src/components/requests.jsx
+
 import { useEffect, useState } from "react";
 import { createBloodRequest, getRequestNotifications } from "../auth_service";
 import BloodCell from "./BloodCell";
@@ -13,6 +15,7 @@ const Request = () => {
     country_code: "",
     location: "",
     description: "",
+    nic_number: "", // Added new field
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -55,8 +58,9 @@ const Request = () => {
         country_code: "",
         location: "",
         description: "",
+        nic_number: "", // Reset new field
       });
-      fetchNotifications(); // Fetch updated notifications after successful request
+      fetchNotifications();
     } catch (error) {
       setError("Failed to create request. Please try again.");
       console.error("Request creation error:", error);
@@ -156,6 +160,14 @@ const Request = () => {
                 required
                 onChange={handleChange}
                 value={formData.location}
+              />
+              <InputField
+                label="NIC Number"
+                id="nic_number"
+                type="text"
+                required
+                onChange={handleChange}
+                value={formData.nic_number}
               />
               <InputField
                 label="Description"
