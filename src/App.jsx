@@ -9,6 +9,7 @@ import HospitalRegister from "./components/hospital_register";
 import Login from "./components/login";
 import NavBar from "./components/nav_bar";
 import Notification from "./components/Notification";
+import RequestDetails from "./components/request_details";
 import Request from "./components/requests";
 import { requestNotificationPermission } from "./config/FirebaseInit";
 
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/donor-dashboard" element={<DonorDashboard />} />
         <Route path="/hospital-dashboard" element={<HospitalDashboard />} />
+        <Route path="/request-details/:id" element={<RequestDetails />} />
       </Routes>
       <ButtonGradient />
     </>
