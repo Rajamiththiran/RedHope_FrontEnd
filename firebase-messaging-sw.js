@@ -1,6 +1,5 @@
 // public/firebase-messaging-sw.js
 /* eslint-disable */
-// public/firebase-messaging-sw.js
 importScripts(
   "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"
 );
@@ -34,35 +33,31 @@ function initializeFirebase() {
       body: payload.notification.body,
       icon: "/path-to-your-icon.png",
       data: payload.data,
-      click_action: payload.data.url,
+      tag: "blood-request",
+      requireInteraction: true, // This will make the notification persist until user interaction
     };
 
-    console.log(
-      "[firebase-messaging-sw.js] Showing notification: ",
-      notificationTitle,
-      notificationOptions
-    );
-
-    self.registration
-      .showNotification(notificationTitle, notificationOptions)
-      .then(() =>
-        console.log(
-          "[firebase-messaging-sw.js] Notification shown successfully"
-        )
-      )
-      .catch((error) =>
-        console.error(
-          "[firebase-messaging-sw.js] Error showing notification:",
-          error
-        )
-      );
+    self.registration.showNotification(notificationTitle, notificationOptions);
   });
 }
 
 self.addEventListener("notificationclick", function (event) {
   console.log("[firebase-messaging-sw.js] Notification click Received.");
   event.notification.close();
+  const url = event.notification.data.url || "/donor-dashboard";
   event.waitUntil(
-    clients.openWindow(event.notification.data.url || "/donor-dashboard")
+    clients.matchAll({ type: "window" }).then((windowClients) => {
+      // Check if there is already a window/tab open with the target URL
+      for (var i = 0; i < windowClients.length; i++) {
+        var client = windowClients[i];
+        if (client.url === url && "focus" in client) {
+          return client.focus();
+        }
+      }
+      // If no window/tab is already open, open a new one
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    })
   );
 });

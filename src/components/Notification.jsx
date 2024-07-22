@@ -1,40 +1,61 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { onMessageListener } from "../config/FirebaseInit";
 
 const Notification = () => {
-  const [notification, setNotification] = useState({ title: "", body: "" });
-  const [show, setShow] = useState(false);
+  const navigate = useNavigate();
+  const [latestNotification, setLatestNotification] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onMessageListener()
-      .then((payload) => {
-        setShow(true);
-        setNotification({
-          title: payload.notification.title,
-          body: payload.notification.body,
-        });
-      })
-      .catch((err) => console.log("failed: ", err));
+    const handleMessage = async () => {
+      try {
+        const payload = await onMessageListener();
+        const { title, body } = payload.notification;
+        const { url, requestId } = payload.data;
 
-    return () => unsubscribe;
-  }, []);
+        setLatestNotification({ title, body, url, requestId });
 
-  if (!show) {
-    return null;
-  }
+        // Show notification even if the tab is not focused
+        if (!document.hasFocus()) {
+          new Notification(title, {
+            body,
+            icon: "/path-to-your-icon.png",
+          });
+        }
+      } catch (err) {
+        console.log("Failed to receive message:", err);
+      }
+    };
 
-  return (
-    <div className="fixed top-0 right-0 m-4 p-4 bg-red-500 text-white rounded shadow-lg">
-      <h2 className="text-lg font-bold">{notification.title}</h2>
-      <p>{notification.body}</p>
-      <button
-        className="mt-2 px-2 py-1 bg-white text-red-500 rounded"
-        onClick={() => setShow(false)}
-      >
-        Close
+    const messageHandler = handleMessage();
+
+    return () => {
+      messageHandler.then(() => console.log("Message listener cleaned up"));
+    };
+  }, [navigate]);
+
+  useEffect(() => {
+    if (latestNotification) {
+      const notification = new Notification(latestNotification.title, {
+        body: latestNotification.body,
+        icon: "/path-to-your-icon.png",
+      });
+
+      notification.onclick = function () {
+        navigate(latestNotification.url);
+      };
+    }
+  }, [latestNotification, navigate]);
+
+  return latestNotification ? (
+    <div className="notification-banner">
+      <h3>{latestNotification.title}</h3>
+      <p>{latestNotification.body}</p>
+      <button onClick={() => navigate(latestNotification.url)}>
+        View Request
       </button>
     </div>
-  );
+  ) : null;
 };
 
 export default Notification;
