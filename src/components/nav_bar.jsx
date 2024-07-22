@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LogoSvg from "../assets/svg/LogoSvg";
 import NotificationLogoSvg from "../assets/svg/NotificationLogoSvg";
@@ -10,6 +10,12 @@ const NavBar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState("");
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [lastViewedCount, setLastViewedCount] = useState(() => {
+    const saved = localStorage.getItem("lastViewedCount");
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  const notificationRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,6 +39,10 @@ const NavBar = () => {
       if (donorInfo && donorInfo.blood_type) {
         const data = await getRequestNotifications(donorInfo.blood_type);
         setNotifications(data);
+        // Update the notification count only if there are new notifications
+        if (data.length > lastViewedCount) {
+          setNotificationCount(data.length - lastViewedCount);
+        }
       }
     } catch (err) {
       setError("Failed to fetch notifications");
@@ -40,10 +50,42 @@ const NavBar = () => {
     }
   };
 
+  useEffect(() => {
+    if (location.pathname === "/donor-dashboard") {
+      fetchNotifications();
+      // Set up an interval to fetch notifications every minute
+      const intervalId = setInterval(fetchNotifications, 60000);
+      return () => clearInterval(intervalId);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("lastViewedCount", lastViewedCount.toString());
+  }, [lastViewedCount]);
+
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
     if (!showNotifications) {
       fetchNotifications();
+      // Update the last viewed count and reset the notification count
+      setLastViewedCount(notifications.length);
+      setNotificationCount(0);
     }
   };
 
@@ -65,7 +107,6 @@ const NavBar = () => {
           <span className="text-green-500">Hope</span>
         </span>
       </div>
-
       <button className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
         <svg
           className="w-6 h-6"
@@ -82,7 +123,6 @@ const NavBar = () => {
           />
         </svg>
       </button>
-
       <div
         className={`w-full lg:flex lg:items-center lg:w-auto ${
           isMenuOpen ? "block" : "hidden"
@@ -95,14 +135,18 @@ const NavBar = () => {
           >
             Request Blood
           </Button>
-
           {location.pathname === "/donor-dashboard" && (
-            <div className="relative">
+            <div className="relative" ref={notificationRef}>
               <button
                 onClick={toggleNotifications}
-                className="focus:outline-none p-2"
+                className="focus:outline-none p-2 relative"
               >
                 <NotificationLogoSvg className="w-6 h-6 cursor-pointer" />
+                {notificationCount > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full">
+                    {notificationCount}
+                  </span>
+                )}
               </button>
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10">
