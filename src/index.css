@@ -33,6 +33,14 @@
     @apply transition-all duration-500 ease-in-out;
   }
 
+  .duration-500 {
+    transition-duration: 500ms;
+  }
+
+  .ease-in-out {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .transition-all {
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -71,8 +79,9 @@
 }
 
 .page-exit {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
 }
 
 .page-exit-active {

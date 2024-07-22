@@ -26,6 +26,14 @@ const Login = () => {
         response = await loginDonor(formData.email, formData.password);
         localStorage.setItem("token", response.token);
         localStorage.setItem("userType", "donor");
+        localStorage.setItem(
+          "donorInfo",
+          JSON.stringify({
+            id: response.id,
+            name: response.name,
+            blood_type: response.blood_type,
+          })
+        );
         navigate("/donor-dashboard");
       } else {
         response = await loginHospital(formData.email, formData.password);

@@ -1,48 +1,61 @@
-// src/config/FirebaseInit.js
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { firebaseConfig } from "./FirebaseConfig";
 
 const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+const messaging = getMessaging(app);
 
-export const requestNotificationPermission = async () => {
-  try {
-    // Check if notification permission is already granted
-    if (Notification.permission === "granted") {
-      console.log("Notification permission already granted.");
-    } else if (Notification.permission !== "denied") {
-      // Request permission
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        throw new Error("Notification permission not granted.");
+let tokenPromise = null;
+
+export const requestNotificationPermission = () => {
+  if (tokenPromise) return tokenPromise;
+
+  tokenPromise = new Promise((resolve) => {
+    console.log("Requesting notification permission...");
+    Notification.requestPermission().then((permission) => {
+      console.log("Notification permission status:", permission);
+      if (permission === "granted") {
+        getToken(messaging, {
+          vapidKey: import.meta.env.VITE_REACT_APP_FIREBASE_VAPID_KEY,
+        })
+          .then((token) => {
+            console.log("FCM Token:", token);
+            resolve(token);
+          })
+          .catch((error) => {
+            console.error("Error getting token:", error);
+            resolve(null);
+          });
+      } else {
+        console.log("Notification permission denied");
+        resolve(null);
       }
-    } else {
-      throw new Error("Notification permission denied.");
-    }
-
-    // Register service worker
-    const registration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js"
-    );
-
-    // Get FCM token
-    const token = await getToken(messaging, {
-      vapidKey: import.meta.env.VITE_REACT_APP_FIREBASE_VAPID_KEY,
-      serviceWorkerRegistration: registration,
     });
+  });
 
-    console.log("FCM Token:", token);
-    return token;
-  } catch (error) {
-    console.error("Error requesting notification permission:", error);
-    return null;
-  }
+  return tokenPromise;
 };
 
 export const onMessageListener = () =>
   new Promise((resolve) => {
     onMessage(messaging, (payload) => {
+      console.log("Received foreground message:", payload);
       resolve(payload);
     });
   });
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/firebase-messaging-sw.js")
+    .then(function (registration) {
+      console.log("Service Worker registered with scope:", registration.scope);
+
+      registration.active.postMessage({
+        type: "FIREBASE_CONFIG",
+        config: firebaseConfig,
+      });
+    })
+    .catch(function (error) {
+      console.log("Service Worker registration failed:", error);
+    });
+}
