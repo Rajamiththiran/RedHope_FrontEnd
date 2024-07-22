@@ -60,3 +60,12 @@ export const registerHospital = async (hospitalData) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getRequestDetails = async (requestId) => {
+  try {
+    const response = await api.get(`/Requests/${requestId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
