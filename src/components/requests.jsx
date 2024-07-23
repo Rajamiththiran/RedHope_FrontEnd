@@ -1,5 +1,3 @@
-// File: root/src/components/requests.jsx
-
 import { useEffect, useState } from "react";
 import { createBloodRequest, getRequestNotifications } from "../auth_service";
 import BloodCell from "./BloodCell";
@@ -19,7 +17,6 @@ const Request = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     fetchNotifications();
