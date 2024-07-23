@@ -45,17 +45,26 @@ export const onMessageListener = () =>
   });
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("/firebase-messaging-sw.js")
-    .then(function (registration) {
-      console.log("Service Worker registered with scope:", registration.scope);
+  window.addEventListener("load", function () {
+    navigator.serviceWorker
+      .register("/firebase-messaging-sw.js")
+      .then(function (registration) {
+        console.log(
+          "Service Worker registered with scope:",
+          registration.scope
+        );
 
-      registration.active.postMessage({
-        type: "FIREBASE_CONFIG",
-        config: firebaseConfig,
+        // Wait for the service worker to be ready before sending the config
+        return navigator.serviceWorker.ready;
+      })
+      .then((registration) => {
+        registration.active.postMessage({
+          type: "FIREBASE_CONFIG",
+          config: firebaseConfig,
+        });
+      })
+      .catch(function (error) {
+        console.log("Service Worker registration failed:", error);
       });
-    })
-    .catch(function (error) {
-      console.log("Service Worker registration failed:", error);
-    });
+  });
 }
