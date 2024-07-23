@@ -93,3 +93,33 @@ export const createDonationHistory = async (donationData) => {
     throw error;
   }
 };
+
+export const getDonationHistory = async (donorId) => {
+  try {
+    const response = await api.get(`/donors/donation_history/donor/${donorId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const updateDonationHistory = async (id, donationData) => {
+  try {
+    const response = await api.put(
+      `/donors/donation_history/${id}`,
+      donationData
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const deleteDonationHistory = async (id) => {
+  try {
+    const response = await api.delete(`/donors/donation_history/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
