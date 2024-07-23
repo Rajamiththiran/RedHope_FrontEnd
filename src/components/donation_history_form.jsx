@@ -1,7 +1,9 @@
-import React from "react";
+import moment from "moment";
+import { useState } from "react";
+import { createDonationHistory } from "../auth_service";
 
 const DonationHistoryForm = ({ onSubmit, onCancel, initialData = {} }) => {
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     donation_date: "",
     address: "",
     blood_type: "",
@@ -10,14 +12,47 @@ const DonationHistoryForm = ({ onSubmit, onCancel, initialData = {} }) => {
     description: "",
     ...initialData,
   });
+  const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setError("");
+
+    try {
+      const donorInfo = JSON.parse(localStorage.getItem("donorInfo"));
+      if (!donorInfo || !donorInfo.id) {
+        throw new Error("Donor information not found");
+      }
+
+      const donationData = {
+        ...formData,
+        donor_id: donorInfo.id,
+        volume: parseFloat(formData.volume),
+        donation_date: moment(formData.donation_date).format(), // Format to ISO 8601
+      };
+
+      console.log("Submitting donation data:", donationData);
+      const response = await createDonationHistory(donationData);
+      console.log("Donation history created:", response);
+      onSubmit(response);
+    } catch (error) {
+      console.error("Error creating donation history:", error);
+      let errorMessage = "Failed to create donation history. ";
+      if (error.response) {
+        errorMessage += `Server error: ${error.response.status} - ${
+          error.response.data.message || error.response.data.error
+        }`;
+      } else if (error.request) {
+        errorMessage += "No response received from server.";
+      } else {
+        errorMessage += error.message;
+      }
+      setError(errorMessage);
+    }
   };
 
   return (
@@ -28,7 +63,6 @@ const DonationHistoryForm = ({ onSubmit, onCancel, initialData = {} }) => {
         value={formData.donation_date}
         onChange={handleInputChange}
         className="w-full p-2 border border-n-3 rounded-md focus:outline-none focus:ring-1 focus:ring-color-1 bg-white text-n-7"
-        placeholder="Donation Date"
         required
       />
       <input
@@ -74,6 +108,7 @@ const DonationHistoryForm = ({ onSubmit, onCancel, initialData = {} }) => {
         className="w-full p-2 border border-n-3 rounded-md focus:outline-none focus:ring-1 focus:ring-color-1 bg-white text-n-7"
         placeholder="Description"
       ></textarea>
+      {error && <p className="text-red-500">{error}</p>}
       <div className="flex justify-end space-x-2">
         <button
           type="submit"
