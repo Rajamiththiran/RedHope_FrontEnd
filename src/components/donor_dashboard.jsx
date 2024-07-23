@@ -1,53 +1,21 @@
-import { useEffect, useState } from "react";
-import { getRequestNotifications } from "../auth_service";
+import DonationHistoryTable from "./donation_histoy_table";
 
 const DonorDashboard = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
-    try {
-      const donorInfo = JSON.parse(localStorage.getItem("donorInfo"));
-      const data = await getRequestNotifications(donorInfo.blood_type);
-      setNotifications(data);
-    } catch (err) {
-      setError("Failed to fetch notifications");
-      console.error(err);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-red-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-red-600 mb-4">
-          Donor Dashboard
-        </h1>
-        <p className="text-gray-700 mb-4">
-          Welcome to your donor dashboard. Here you can view blood requests
-          matching your blood type.
-        </p>
-        <h2 className="text-xl font-bold mt-8 mb-4">
-          Blood Request Notifications
-        </h2>
-        {notifications.length > 0 ? (
-          <ul className="space-y-2">
-            {notifications.map((notification, index) => (
-              <li key={index} className="p-2 bg-red-100 rounded">
-                <p>Blood Type: {notification.blood_type_requested}</p>
-                <p>Urgency: {notification.urgency_level}</p>
-                <p>Location: {notification.location}</p>
-                <p>Requester Phone Number: {notification.phone_number}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No matching blood requests at the moment.</p>
-        )}
-        {error && <p className="text-red-500 mt-4">{error}</p>}
+    <div className="min-h-screen bg-gradient-to-b from-red-300 to-red-100 flex flex-col">
+      <div className="flex-grow flex items-center justify-center p-2">
+        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-4xl">
+          <h1 className="text-3xl font-bold text-red-600 mb-4 text-center">
+            Donor Dashboard
+          </h1>
+          <p className="text-gray-700 mb-6 text-center">
+            Welcome to your donor dashboard. Here you can view your donation
+            history and manage your profile.
+          </p>
+          <div className="flex justify-center">
+            <DonationHistoryTable />
+          </div>
+        </div>
       </div>
     </div>
   );
