@@ -1,24 +1,44 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  deleteDonationHistory,
+  getDonationHistory,
+  updateDonationHistory,
+} from "../auth_service";
+import Button from "./button";
+import DonationHistoryForm from "./donation_history_form";
+import Popup from "./popup";
 
 const DonationHistoryTable = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedDonation, setSelectedDonation] = useState(null);
+  const [donations, setDonations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [showDetailsPopup, setShowDetailsPopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
   const popupRef = useRef(null);
 
-  // Mock data for demonstration
-  const donations = [
-    {
-      id: 1,
-      donationDate: "2024-07-05",
-      address: "123 Main St, Anytown, USA",
-      bloodType: "A+",
-      volume: "450 mL",
-      donationType: "Whole Blood",
-      description: "Regular donation at local blood drive",
-    },
-    // Add more mock data as needed
-  ];
+  useEffect(() => {
+    fetchDonationHistory();
+  }, []);
+
+  const fetchDonationHistory = async () => {
+    try {
+      const donorInfo = JSON.parse(localStorage.getItem("donorInfo"));
+      if (donorInfo && donorInfo.id) {
+        const data = await getDonationHistory(donorInfo.id);
+        setDonations(data);
+      } else {
+        throw new Error("Donor information not found");
+      }
+    } catch (err) {
+      setError("Failed to fetch donation history");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -27,28 +47,59 @@ const DonationHistoryTable = () => {
 
   const filteredDonations = donations.filter((donation) => {
     if (!startDate && !endDate) return true;
-    const donationDate = new Date(donation.donationDate);
+    const donationDate = new Date(donation.donation_date);
     return (
       (!startDate || donationDate >= new Date(startDate)) &&
       (!endDate || donationDate <= new Date(endDate))
     );
   });
 
+  const handleEllipsisClick = (donation) => {
+    setSelectedDonation(donation);
+    setShowDetailsPopup(true);
+  };
+
   const handleEdit = () => {
-    console.log(`Edit donation with id: ${selectedDonation.id}`);
-    setSelectedDonation(null);
+    setShowDetailsPopup(false);
+    setShowEditPopup(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteDonationHistory(selectedDonation.id);
+      await fetchDonationHistory();
+      setShowDetailsPopup(false);
+    } catch (error) {
+      console.error("Failed to delete donation:", error);
+      setError("Failed to delete donation. Please try again.");
+    }
+  };
+
+  const handleUpdate = async (updatedDonation) => {
+    try {
+      await updateDonationHistory(selectedDonation.id, updatedDonation);
+      await fetchDonationHistory();
+      setShowEditPopup(false);
+    } catch (error) {
+      console.error("Failed to update donation:", error);
+      setError("Failed to update donation. Please try again.");
+    }
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setSelectedDonation(null);
+        setShowDetailsPopup(false);
+        setShowEditPopup(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error)
+    return <div className="text-red-500 text-center mt-4">{error}</div>;
 
   return (
     <div className="w-full p-4">
@@ -94,20 +145,20 @@ const DonationHistoryTable = () => {
               {filteredDonations.map((donation) => (
                 <tr key={donation.id}>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    {formatDate(donation.donationDate)}
+                    {formatDate(donation.donation_date)}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    {donation.bloodType}
+                    {donation.blood_type}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     {donation.volume}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    {donation.donationType}
+                    {donation.donation_type}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <button
-                      onClick={() => setSelectedDonation(donation)}
+                      onClick={() => handleEllipsisClick(donation)}
                       className="text-blue-600 hover:text-blue-900"
                     >
                       ⋮
@@ -120,36 +171,49 @@ const DonationHistoryTable = () => {
         </div>
       </div>
 
-      {selectedDonation && (
+      {showDetailsPopup && selectedDonation && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
           <div
             ref={popupRef}
             className="bg-white p-5 rounded-lg shadow-xl max-w-sm mx-auto"
           >
-            <h3 className="text-lg font-semibold mb-4">Edit Donation</h3>
+            <h3 className="text-lg font-semibold mb-4">Donation Details</h3>
             <p className="mb-2">
-              Date: {formatDate(selectedDonation.donationDate)}
+              Date: {formatDate(selectedDonation.donation_date)}
             </p>
-            <p className="mb-2">Blood Type: {selectedDonation.bloodType}</p>
+            <p className="mb-2">Blood Type: {selectedDonation.blood_type}</p>
             <p className="mb-2">Volume: {selectedDonation.volume}</p>
-            <p className="mb-4">Type: {selectedDonation.donationType}</p>
+            <p className="mb-2">Type: {selectedDonation.donation_type}</p>
+            <p className="mb-4">Location: {selectedDonation.address}</p>
             <div className="flex justify-end space-x-2">
-              <button
+              <Button
                 onClick={handleEdit}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
                 Edit
-              </button>
-              <button
-                onClick={() => setSelectedDonation(null)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              </Button>
+              <Button
+                onClick={handleDelete}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               >
-                Cancel
-              </button>
+                Delete
+              </Button>
             </div>
           </div>
         </div>
       )}
+
+      <Popup
+        isOpen={showEditPopup}
+        onClose={() => setShowEditPopup(false)}
+        title="Edit Donation"
+      >
+        <DonationHistoryForm
+          onSubmit={handleUpdate}
+          onCancel={() => setShowEditPopup(false)}
+          initialData={selectedDonation}
+        />
+      </Popup>
     </div>
   );
 };
