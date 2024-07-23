@@ -39,9 +39,8 @@ const NavBar = () => {
       if (donorInfo && donorInfo.blood_type) {
         const data = await getRequestNotifications(donorInfo.blood_type);
         setNotifications(data);
-        if (data.length > lastViewedCount) {
-          setNotificationCount(data.length - lastViewedCount);
-        }
+        const newCount = data.length - lastViewedCount;
+        setNotificationCount(newCount > 0 ? newCount : 0);
       }
     } catch (err) {
       setError("Failed to fetch notifications");
@@ -52,7 +51,7 @@ const NavBar = () => {
   useEffect(() => {
     if (location.pathname === "/donor-dashboard") {
       fetchNotifications();
-      const intervalId = setInterval(fetchNotifications, 60000);
+      const intervalId = setInterval(fetchNotifications, 60000); // Fetch every minute
       return () => clearInterval(intervalId);
     }
   }, [location.pathname]);
@@ -66,23 +65,18 @@ const NavBar = () => {
         setShowNotifications(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("lastViewedCount", lastViewedCount.toString());
-  }, [lastViewedCount]);
-
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
     if (!showNotifications) {
-      fetchNotifications();
       setLastViewedCount(notifications.length);
       setNotificationCount(0);
+      localStorage.setItem("lastViewedCount", notifications.length.toString());
     }
   };
 
