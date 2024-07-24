@@ -1,11 +1,8 @@
+import moment from "moment";
 import { useEffect, useRef, useState } from "react";
-import {
-  deleteDonationHistory,
-  getDonationHistory,
-  updateDonationHistory,
-} from "../auth_service";
+import { deleteDonationHistory, getDonationHistory } from "../auth_service";
 import Button from "./button";
-import DonationHistoryForm from "./donation_history_form";
+import DonationHistoryUpdate from "./donation_history_update";
 import Popup from "./popup";
 
 const DonationHistoryTable = () => {
@@ -41,16 +38,15 @@ const DonationHistoryTable = () => {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB");
+    return moment(dateString).format("DD/MM/YYYY");
   };
 
   const filteredDonations = donations.filter((donation) => {
     if (!startDate && !endDate) return true;
-    const donationDate = new Date(donation.donation_date);
+    const donationDate = moment(donation.donation_date);
     return (
-      (!startDate || donationDate >= new Date(startDate)) &&
-      (!endDate || donationDate <= new Date(endDate))
+      (!startDate || donationDate.isSameOrAfter(moment(startDate))) &&
+      (!endDate || donationDate.isSameOrBefore(moment(endDate)))
     );
   });
 
@@ -77,7 +73,6 @@ const DonationHistoryTable = () => {
 
   const handleUpdate = async (updatedDonation) => {
     try {
-      await updateDonationHistory(selectedDonation.id, updatedDonation);
       await fetchDonationHistory();
       setShowEditPopup(false);
     } catch (error) {
@@ -131,11 +126,15 @@ const DonationHistoryTable = () => {
                   Blood Type
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Address
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Volume
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Type
                 </th>
+
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Actions
                 </th>
@@ -149,6 +148,9 @@ const DonationHistoryTable = () => {
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     {donation.blood_type}
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    {donation.address}
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     {donation.volume}
@@ -208,7 +210,7 @@ const DonationHistoryTable = () => {
         onClose={() => setShowEditPopup(false)}
         title="Edit Donation"
       >
-        <DonationHistoryForm
+        <DonationHistoryUpdate
           onSubmit={handleUpdate}
           onCancel={() => setShowEditPopup(false)}
           initialData={selectedDonation}

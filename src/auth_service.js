@@ -105,12 +105,20 @@ export const getDonationHistory = async (donorId) => {
 
 export const updateDonationHistory = async (id, donationData) => {
   try {
+    console.log("Updating donation history:", id, donationData);
     const response = await api.put(
       `/donors/donation_history/${id}`,
       donationData
     );
     return response.data;
   } catch (error) {
+    console.error(
+      "Error updating donation history:",
+      error.response?.data || error.message
+    );
+    if (error.response && error.response.data) {
+      console.error("Server error details:", error.response.data);
+    }
     throw error.response ? error.response.data : error.message;
   }
 };
