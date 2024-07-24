@@ -33,7 +33,7 @@ const DonationHistoryUpdate = ({ onSubmit, onCancel, initialData = {} }) => {
         ...formData,
         donor_id: donorInfo.id,
         volume: parseFloat(formData.volume),
-        donation_date: moment(formData.donation_date).format(),
+        donation_date: formData.donation_date, // Send the date as is, don't format it again
       };
 
       console.log("Updating donation data:", donationData);
