@@ -2,12 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LogoSvg from "../assets/svg/LogoSvg";
 import NotificationLogoSvg from "../assets/svg/NotificationLogoSvg";
+import ProfileLogoSvg from "../assets/svg/ProfileLogoSvg";
 import { getRequestNotifications } from "../auth_service";
 import Button from "./button";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
@@ -15,7 +17,9 @@ const NavBar = () => {
     const saved = localStorage.getItem("lastViewedCount");
     return saved ? parseInt(saved, 10) : 0;
   });
+
   const notificationRef = useRef(null);
+  const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -64,6 +68,9 @@ const NavBar = () => {
       ) {
         setShowNotifications(false);
       }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -80,10 +87,23 @@ const NavBar = () => {
     }
   };
 
+  const toggleProfileMenu = () => {
+    setShowProfileMenu(!showProfileMenu);
+  };
+
   const handleNotificationClick = (notification) => {
     console.log("Clicked notification:", notification);
     navigate(`/request-details/${notification.id}`);
     setShowNotifications(false);
+  };
+
+  const handleLogout = () => {
+    // Clear local storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("donorInfo");
+    // Navigate to home page
+    handleNavigation("/");
   };
 
   return (
@@ -127,46 +147,70 @@ const NavBar = () => {
             Request Blood
           </Button>
           {location.pathname === "/donor-dashboard" && (
-            <div className="relative" ref={notificationRef}>
-              <Button
-                className="p-2 relative hover:bg-transparent"
-                onClick={toggleNotifications}
-              >
-                <NotificationLogoSvg className="w-6 h-6 cursor-pointer text-[#4d4d4d] hover:text-color-1 transition-colors" />
-                {notificationCount > 0 && (
-                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full">
-                    {notificationCount}
-                  </span>
-                )}
-              </Button>
-              {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10">
-                  <div className="py-2 max-h-96 overflow-y-auto">
-                    {notifications.length > 0 ? (
-                      notifications.map((notification) => (
-                        <div
-                          key={notification.id}
-                          className="px-4 py-3 hover:bg-red-200 bg-red-100 cursor-pointer mb-2 rounded"
-                          onClick={() => handleNotificationClick(notification)}
-                        >
-                          <p className="font-semibold">
-                            Blood Type: {notification.blood_type_requested}
-                          </p>
-                          <p>Urgency: {notification.urgency_level}</p>
-                          <p>Location: {notification.location}</p>
-                          <p>Phone Number: {notification.phone_number}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="px-4 py-2">No new notifications</div>
-                    )}
-                    {error && (
-                      <div className="px-4 py-2 text-red-500">{error}</div>
-                    )}
+            <>
+              <div className="relative" ref={notificationRef}>
+                <Button
+                  className="p-2 relative hover:bg-transparent"
+                  onClick={toggleNotifications}
+                >
+                  <NotificationLogoSvg className="w-6 h-6 cursor-pointer text-[#4d4d4d] hover:text-color-1 transition-colors" />
+                  {notificationCount > 0 && (
+                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full">
+                      {notificationCount}
+                    </span>
+                  )}
+                </Button>
+                {showNotifications && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10">
+                    <div className="py-2 max-h-96 overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map((notification) => (
+                          <div
+                            key={notification.id}
+                            className="px-4 py-3 hover:bg-red-200 bg-red-100 cursor-pointer mb-2 rounded"
+                            onClick={() =>
+                              handleNotificationClick(notification)
+                            }
+                          >
+                            <p className="font-semibold">
+                              Blood Type: {notification.blood_type_requested}
+                            </p>
+                            <p>Urgency: {notification.urgency_level}</p>
+                            <p>Location: {notification.location}</p>
+                            <p>Phone Number: {notification.phone_number}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-4 py-2">No new notifications</div>
+                      )}
+                      {error && (
+                        <div className="px-4 py-2 text-red-500">{error}</div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+              <div className="relative" ref={profileRef}>
+                <Button
+                  className="p-2 relative hover:bg-transparent"
+                  onClick={toggleProfileMenu}
+                >
+                  <ProfileLogoSvg className="w-6 h-6 cursor-pointer text-[#4d4d4d] hover:text-color-1 transition-colors" />
+                </Button>
+                {showProfileMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                    <div className="py-1">
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
