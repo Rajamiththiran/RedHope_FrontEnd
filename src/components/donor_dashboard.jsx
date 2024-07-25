@@ -1,8 +1,23 @@
+import { useState } from "react";
 import DonationHistoryTable from "./donation_histoy_table";
+import SideNavMenu from "./SideNavMenu";
+import SideNavToggle from "./SideNavToggle";
 
 const DonorDashboard = () => {
+  const [isSideNavOpen, setIsSideNavOpen] = useState(false);
+
+  const toggleSideNav = () => {
+    setIsSideNavOpen(!isSideNavOpen);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-700 to-red-300 flex flex-col">
+      <SideNavToggle isOpen={isSideNavOpen} onClick={toggleSideNav} />
+      <SideNavMenu
+        isOpen={isSideNavOpen}
+        onClose={() => setIsSideNavOpen(false)}
+      />
+
       <div className="flex-grow flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8 w-full max-w-4xl">
           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 text-center">

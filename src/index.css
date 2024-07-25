@@ -10,7 +10,6 @@
   --font-sora: "Sora", sans-serif;
   --font-code: "Source Code Pro", monospace;
   --font-grotesk: "Space Grotesk", sans-serif;
-
 }
 
 * {
@@ -20,7 +19,6 @@
 @layer base {
   body {
     @apply font-sans bg-white text-black text-base;
-    /* @apply font-sans bg-n-8 text-n-1 text-base; */
   }
 }
 
@@ -31,14 +29,6 @@
 
   .transition-page {
     @apply transition-all duration-500 ease-in-out;
-  }
-
-  .duration-500 {
-    transition-duration: 500ms;
-  }
-
-  .ease-in-out {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .transition-all {
@@ -60,6 +50,14 @@
   }
 }
 
+.duration-500 {
+  transition-duration: 500ms;
+}
+
+.ease-in-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .hover-scale {
   @apply transition-transform hover:scale-105;
 }
@@ -79,9 +77,8 @@
 }
 
 .page-exit {
-  opacity: 0;
-  transform: translateY(-20px);
-  transition: opacity 300ms, transform 300ms;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .page-exit-active {
@@ -151,4 +148,121 @@
 
 .-rotate-360 {
   @apply rotate-[-360deg];
+}
+
+/* New styles for sliding animation */
+@layer utilities {
+  .slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+
+  .slide-out {
+    animation: slide-out 0.3s ease-in;
+  }
+
+  .modal {
+    z-index: 9999;
+    background-color: white;
+  }
+
+  .modal-overlay {
+    z-index: 9998;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  @keyframes slide-in {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-out {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+/* New styles for calendar */
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.rbc-calendar {
+  @apply font-sans;
+}
+
+.rbc-header {
+  @apply bg-red-100 text-red-800 font-semibold;
+}
+
+.rbc-event {
+  @apply rounded-lg shadow-md;
+}
+
+.rbc-today {
+  @apply bg-red-50;
+}
+
+.rbc-active {
+  @apply bg-red-200;
+}
+
+.rbc-toolbar button {
+  @apply bg-red-500 text-white hover:bg-red-600;
+}
+
+.rbc-toolbar-label {
+  @apply text-red-800 font-bold;
+}
+
+.rbc-month-view,
+.rbc-time-view,
+.rbc-agenda-view {
+  @apply border-red-200;
+}
+
+.rbc-off-range-bg {
+  @apply bg-gray-100;
+}
+
+.rbc-event-content {
+  @apply text-sm;
+}
+
+/* Calendar and Modal styles */
+.calendar-container {
+  position: relative;
+  z-index: 1;
+}
+
+.rbc-calendar {
+  z-index: 2;
+}
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.modal-overlay {
+  z-index: 9998;
+}
+
+.modal-content {
+  z-index: 9999;
+  background-color: white;
+  position: relative;
+}
+
+/* Ensure the date picker is always on top */
+.react-datepicker-popper {
+  z-index: 10000 !important;
 }
