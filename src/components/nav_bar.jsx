@@ -2,11 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LogoSvg from "../assets/svg/LogoSvg";
 import NotificationLogoSvg from "../assets/svg/NotificationLogoSvg";
+import ProfileLogoSvg from "../assets/svg/ProfileLogoSvg";
 import { getRequestNotifications } from "../auth_service";
 import Button from "./button";
+import Popup from "./popup";
 
 const NavBar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState("");
@@ -15,6 +17,9 @@ const NavBar = () => {
     const saved = localStorage.getItem("lastViewedCount");
     return saved ? parseInt(saved, 10) : 0;
   });
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
+
+  const profileRef = useRef(null);
   const notificationRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,7 +35,10 @@ const NavBar = () => {
     [navigate]
   );
 
-  const handleRequestBlood = () => handleNavigation("/request-blood");
+  const handleRequestBlood = () => {
+    handleNavigation("/request-blood");
+    setShowProfileMenu(false);
+  };
   const handleLogoClick = () => handleNavigation("/");
 
   const fetchNotifications = async () => {
@@ -51,13 +59,16 @@ const NavBar = () => {
   useEffect(() => {
     if (location.pathname === "/donor-dashboard") {
       fetchNotifications();
-      const intervalId = setInterval(fetchNotifications, 60000); // Fetch every minute
+      const intervalId = setInterval(fetchNotifications, 60000);
       return () => clearInterval(intervalId);
     }
   }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
       if (
         notificationRef.current &&
         !notificationRef.current.contains(event.target)
@@ -71,7 +82,15 @@ const NavBar = () => {
     };
   }, []);
 
-  const toggleNotifications = () => {
+  const toggleProfileMenu = () => {
+    setShowProfileMenu(!showProfileMenu);
+    if (!showProfileMenu) {
+      setShowNotifications(false);
+    }
+  };
+
+  const toggleNotifications = (e) => {
+    e.stopPropagation();
     setShowNotifications(!showNotifications);
     if (!showNotifications) {
       setLastViewedCount(notifications.length);
@@ -80,14 +99,65 @@ const NavBar = () => {
     }
   };
 
-  const handleNotificationClick = (notification) => {
-    console.log("Clicked notification:", notification);
-    navigate(`/request-details/${notification.id}`);
-    setShowNotifications(false);
+  const handleNotificationClick = useCallback(
+    (notification, e) => {
+      e.stopPropagation();
+      console.log("Clicked notification:", notification);
+      handleNavigation(`/request-details/${notification.id}`);
+      setShowNotifications(false);
+      setShowProfileMenu(false);
+    },
+    [handleNavigation]
+  );
+
+  const handleLogout = () => {
+    setShowLogoutConfirmation(true);
   };
 
+  const confirmLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("donorInfo");
+    handleNavigation("/");
+    setShowLogoutConfirmation(false);
+    setShowProfileMenu(false);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirmation(false);
+  };
+
+  const isDonorDashboard = location.pathname === "/donor-dashboard";
+
+  const renderNotifications = () => (
+    <div
+      className="py-2 max-h-96 overflow-y-auto"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {notifications.length > 0 ? (
+        notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className="px-4 py-3 hover:bg-red-200 bg-red-100 cursor-pointer mb-2 rounded"
+            onClick={(e) => handleNotificationClick(notification, e)}
+          >
+            <p className="font-semibold">
+              Blood Type: {notification.blood_type_requested}
+            </p>
+            <p>Urgency: {notification.urgency_level}</p>
+            <p>Location: {notification.location}</p>
+            <p>Phone Number: {notification.phone_number}</p>
+          </div>
+        ))
+      ) : (
+        <div className="px-4 py-2">No new notifications</div>
+      )}
+      {error && <div className="px-4 py-2 text-red-500">{error}</div>}
+    </div>
+  );
+
   return (
-    <nav className="flex flex-wrap items-center justify-between p-4 bg-white shadow-md">
+    <nav className="flex items-center justify-between p-4 bg-white shadow-md">
       <div
         className="flex items-center space-x-2 cursor-pointer transition-page"
         onClick={handleLogoClick}
@@ -98,35 +168,20 @@ const NavBar = () => {
           <span className="text-green-500">Hope</span>
         </span>
       </div>
-      <button className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
-      </button>
-      <div
-        className={`w-full lg:flex lg:items-center lg:w-auto ${
-          isMenuOpen ? "block" : "hidden"
-        }`}
-      >
-        <div className="flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4 mt-4 lg:mt-0">
+
+      <div className="flex items-center space-x-4">
+        <div className="hidden md:block">
           <Button
-            className="text-black w-full lg:w-auto transition-page"
+            className="text-black transition-page"
             onClick={handleRequestBlood}
           >
             Request Blood
           </Button>
-          {location.pathname === "/donor-dashboard" && (
+        </div>
+
+        {isDonorDashboard && (
+          <div className="flex items-center space-x-2">
+            {/* Notification icon for all devices */}
             <div className="relative" ref={notificationRef}>
               <Button
                 className="p-2 relative hover:bg-transparent"
@@ -141,35 +196,57 @@ const NavBar = () => {
               </Button>
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10">
-                  <div className="py-2 max-h-96 overflow-y-auto">
-                    {notifications.length > 0 ? (
-                      notifications.map((notification) => (
-                        <div
-                          key={notification.id}
-                          className="px-4 py-3 hover:bg-red-200 bg-red-100 cursor-pointer mb-2 rounded"
-                          onClick={() => handleNotificationClick(notification)}
-                        >
-                          <p className="font-semibold">
-                            Blood Type: {notification.blood_type_requested}
-                          </p>
-                          <p>Urgency: {notification.urgency_level}</p>
-                          <p>Location: {notification.location}</p>
-                          <p>Phone Number: {notification.phone_number}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="px-4 py-2">No new notifications</div>
-                    )}
-                    {error && (
-                      <div className="px-4 py-2 text-red-500">{error}</div>
-                    )}
+                  {renderNotifications()}
+                </div>
+              )}
+            </div>
+
+            {/* Profile icon */}
+            <div className="relative" ref={profileRef}>
+              <Button
+                className="p-2 relative hover:bg-transparent"
+                onClick={toggleProfileMenu}
+              >
+                <ProfileLogoSvg className="w-6 h-6 cursor-pointer text-[#4d4d4d] hover:text-color-1 transition-colors" />
+              </Button>
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                  <div className="py-1">
+                    <button
+                      onClick={handleRequestBlood}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:hidden"
+                    >
+                      Request Blood
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
                   </div>
                 </div>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      <Popup
+        isOpen={showLogoutConfirmation}
+        onClose={cancelLogout}
+        title="Confirm Logout"
+      >
+        <p className="mb-4">Are you sure you want to log out?</p>
+        <div className="flex justify-end space-x-2">
+          <Button onClick={cancelLogout} className="bg-gray-300 text-black">
+            Cancel
+          </Button>
+          <Button onClick={confirmLogout} className="bg-red-500 text-white">
+            Logout
+          </Button>
+        </div>
+      </Popup>
     </nav>
   );
 };
