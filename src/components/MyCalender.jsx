@@ -1,6 +1,6 @@
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import enUS from "date-fns/locale/en-US";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import DatePicker from "react-datepicker";
@@ -19,15 +19,21 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+// Ensure Modal is accessible
+Modal.setAppElement("#root");
+
 const MyCalendar = () => {
   const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [newEvent, setNewEvent] = useState({
     title: "",
     start: new Date(),
     end: new Date(),
     address: "",
     description: "",
+    color: "#3174ad",
   });
 
   const handleAddEvent = () => {
@@ -39,20 +45,25 @@ const MyCalendar = () => {
       end: new Date(),
       address: "",
       description: "",
+      color: "#3174ad",
     });
   };
 
-  const eventStyleGetter = (event, start, end, isSelected) => {
-    const style = {
-      backgroundColor: "#3174ad",
-      borderRadius: "5px",
-      opacity: 0.8,
-      color: "white",
-      border: "0px",
-      display: "block",
-    };
+  const handleEventClick = (event) => {
+    setSelectedEvent(event);
+    setIsDetailsModalOpen(true);
+  };
+
+  const eventStyleGetter = (event) => {
     return {
-      style: style,
+      style: {
+        backgroundColor: event.color,
+        borderRadius: "5px",
+        opacity: 0.8,
+        color: "white",
+        border: "0px",
+        display: "block",
+      },
     };
   };
 
@@ -67,20 +78,23 @@ const MyCalendar = () => {
           Make an Event
         </button>
       </div>
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        eventPropGetter={eventStyleGetter}
-      />
+      <div className="calendar-container">
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 500 }}
+          eventPropGetter={eventStyleGetter}
+          onSelectEvent={handleEventClick}
+        />
+      </div>
       <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         contentLabel="Add Event"
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-lg shadow-lg"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+        className="modal-content fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-lg shadow-lg w-96"
+        overlayClassName="modal-overlay fixed inset-0 bg-black bg-opacity-50"
       >
         <h2 className="text-2xl font-bold mb-4">Add New Event</h2>
         <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
@@ -136,6 +150,17 @@ const MyCalendar = () => {
               className="w-full p-2 border rounded"
             />
           </div>
+          <div>
+            <label className="block mb-1">Color:</label>
+            <input
+              type="color"
+              value={newEvent.color}
+              onChange={(e) =>
+                setNewEvent({ ...newEvent, color: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+            />
+          </div>
           <button
             onClick={handleAddEvent}
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -143,6 +168,31 @@ const MyCalendar = () => {
             Add Event
           </button>
         </form>
+      </Modal>
+      <Modal
+        isOpen={isDetailsModalOpen}
+        onRequestClose={() => setIsDetailsModalOpen(false)}
+        contentLabel="Event Details"
+        className="modal-content fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-lg shadow-lg w-96"
+        overlayClassName="modal-overlay fixed inset-0 bg-black bg-opacity-50"
+      >
+        {selectedEvent && (
+          <div>
+            <h2 className="text-2xl font-bold mb-4">{selectedEvent.title}</h2>
+            <p>
+              <strong>Start:</strong> {format(selectedEvent.start, "PPpp")}
+            </p>
+            <p>
+              <strong>End:</strong> {format(selectedEvent.end, "PPpp")}
+            </p>
+            <p>
+              <strong>Address:</strong> {selectedEvent.address}
+            </p>
+            <p>
+              <strong>Description:</strong> {selectedEvent.description}
+            </p>
+          </div>
+        )}
       </Modal>
     </div>
   );
