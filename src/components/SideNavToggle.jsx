@@ -2,7 +2,7 @@ const SideNavToggle = ({ isOpen, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="fixed top-16 left-0 z-50 bg-white p-2 rounded-r-md shadow-lg transition-transform duration-300 ease-in-out"
+      className="fixed top-16 left-0 z-50 bg-[#5b5b5b] p-2 rounded-r-md shadow-lg transition-transform duration-300 ease-in-out"
       style={{ transform: isOpen ? "translateX(256px)" : "translateX(0)" }}
     >
       <svg

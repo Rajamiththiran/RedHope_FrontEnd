@@ -20,53 +20,44 @@ const SideNavMenu = ({ isOpen, onClose }) => {
   return (
     <div
       ref={sideNavRef}
-      className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
+      className={`fixed top-20 left-4 h-[calc(100vh-6rem)] w-64 bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] bg-opacity-90 shadow-lg transform transition-all duration-300 ease-in-out z-40 rounded-2xl overflow-hidden ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
-      style={{ top: "60px" }} // Adjust this value to match your navbar height
     >
-      <div className="p-4">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">Menu</h2>
+      <div className="p-8 h-full overflow-y-auto">
+        <h2 className="text-3xl font-bold text-white mb-6 font-sans">Menu</h2>
         <nav>
-          <ul className="space-y-2">
+          <ul className="space-y-4">
             <li>
               <Link
-                to="/donor-dashboard"
-                className="block py-2 px-4 text-gray-800 hover:bg-red-100 rounded transition-colors"
+                to="/my-feed"
+                className="block py-2 px-4 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors"
               >
-                Dashboard
+                My Feed
               </Link>
             </li>
             <li>
               <Link
-                to="/profile"
-                className="block py-2 px-4 text-gray-800 hover:bg-red-100 rounded transition-colors"
+                to="/my-calendar"
+                className="block py-2 px-4 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors"
               >
-                Profile
+                My Calendar
               </Link>
             </li>
             <li>
               <Link
-                to="/donation-history"
-                className="block py-2 px-4 text-gray-800 hover:bg-red-100 rounded transition-colors"
+                to="/explore"
+                className="block py-2 px-4 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors"
               >
-                Donation History
+                Explore
               </Link>
             </li>
             <li>
               <Link
-                to="/notifications"
-                className="block py-2 px-4 text-gray-800 hover:bg-red-100 rounded transition-colors"
+                to="/more-options"
+                className="block py-2 px-4 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors"
               >
-                Notifications
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/settings"
-                className="block py-2 px-4 text-gray-800 hover:bg-red-100 rounded transition-colors"
-              >
-                Settings
+                More Options
               </Link>
             </li>
           </ul>
