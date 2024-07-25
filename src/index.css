@@ -74,6 +74,7 @@
 .page-enter-active {
   opacity: 1;
   transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
 }
 
 .page-exit {
@@ -84,6 +85,7 @@
 .page-exit-active {
   opacity: 0;
   transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
 }
 
 .rotate-45 {
@@ -160,16 +162,6 @@
     animation: slide-out 0.3s ease-in;
   }
 
-  .modal {
-    z-index: 9999;
-    background-color: white;
-  }
-
-  .modal-overlay {
-    z-index: 9998;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
   @keyframes slide-in {
     0% {
       transform: translateX(-100%);
@@ -189,53 +181,6 @@
       transform: translateX(-100%);
     }
   }
-}
-
-/* New styles for calendar */
-.react-datepicker-popper {
-  z-index: 9999 !important;
-}
-
-.rbc-calendar {
-  @apply font-sans;
-}
-
-.rbc-header {
-  @apply bg-red-100 text-red-800 font-semibold;
-}
-
-.rbc-event {
-  @apply rounded-lg shadow-md;
-}
-
-.rbc-today {
-  @apply bg-red-50;
-}
-
-.rbc-active {
-  @apply bg-red-200;
-}
-
-.rbc-toolbar button {
-  @apply bg-red-500 text-white hover:bg-red-600;
-}
-
-.rbc-toolbar-label {
-  @apply text-red-800 font-bold;
-}
-
-.rbc-month-view,
-.rbc-time-view,
-.rbc-agenda-view {
-  @apply border-red-200;
-}
-
-.rbc-off-range-bg {
-  @apply bg-gray-100;
-}
-
-.rbc-event-content {
-  @apply text-sm;
 }
 
 /* Calendar and Modal styles */
