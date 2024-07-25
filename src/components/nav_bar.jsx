@@ -89,7 +89,8 @@ const NavBar = () => {
     }
   };
 
-  const toggleNotifications = () => {
+  const toggleNotifications = (e) => {
+    e.stopPropagation();
     setShowNotifications(!showNotifications);
     if (!showNotifications) {
       setLastViewedCount(notifications.length);
@@ -98,12 +99,16 @@ const NavBar = () => {
     }
   };
 
-  const handleNotificationClick = (notification) => {
-    console.log("Clicked notification:", notification);
-    navigate(`/request-details/${notification.id}`);
-    setShowNotifications(false);
-    setShowProfileMenu(false);
-  };
+  const handleNotificationClick = useCallback(
+    (notification, e) => {
+      e.stopPropagation();
+      console.log("Clicked notification:", notification);
+      handleNavigation(`/request-details/${notification.id}`);
+      setShowNotifications(false);
+      setShowProfileMenu(false);
+    },
+    [handleNavigation]
+  );
 
   const handleLogout = () => {
     setShowLogoutConfirmation(true);
@@ -123,6 +128,33 @@ const NavBar = () => {
   };
 
   const isDonorDashboard = location.pathname === "/donor-dashboard";
+
+  const renderNotifications = () => (
+    <div
+      className="py-2 max-h-96 overflow-y-auto"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {notifications.length > 0 ? (
+        notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className="px-4 py-3 hover:bg-red-200 bg-red-100 cursor-pointer mb-2 rounded"
+            onClick={(e) => handleNotificationClick(notification, e)}
+          >
+            <p className="font-semibold">
+              Blood Type: {notification.blood_type_requested}
+            </p>
+            <p>Urgency: {notification.urgency_level}</p>
+            <p>Location: {notification.location}</p>
+            <p>Phone Number: {notification.phone_number}</p>
+          </div>
+        ))
+      ) : (
+        <div className="px-4 py-2">No new notifications</div>
+      )}
+      {error && <div className="px-4 py-2 text-red-500">{error}</div>}
+    </div>
+  );
 
   return (
     <nav className="flex items-center justify-between p-4 bg-white shadow-md">
@@ -148,94 +180,57 @@ const NavBar = () => {
         </div>
 
         {isDonorDashboard && (
-          <div className="relative" ref={profileRef}>
-            <Button
-              className="p-2 relative hover:bg-transparent"
-              onClick={toggleProfileMenu}
-            >
-              <ProfileLogoSvg className="w-6 h-6 cursor-pointer text-[#4d4d4d] hover:text-color-1 transition-colors" />
-              {notificationCount > 0 && (
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full md:hidden">
-                  {notificationCount}
-                </span>
+          <div className="flex items-center space-x-2">
+            {/* Notification icon for all devices */}
+            <div className="relative" ref={notificationRef}>
+              <Button
+                className="p-2 relative hover:bg-transparent"
+                onClick={toggleNotifications}
+              >
+                <NotificationLogoSvg className="w-6 h-6 cursor-pointer text-[#4d4d4d] hover:text-color-1 transition-colors" />
+                {notificationCount > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full">
+                    {notificationCount}
+                  </span>
+                )}
+              </Button>
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10">
+                  {renderNotifications()}
+                </div>
               )}
-            </Button>
-            {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-                <div className="py-1">
-                  <button
-                    onClick={handleRequestBlood}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:hidden"
-                  >
-                    Request Blood
-                  </button>
-                  <div className="relative md:hidden">
+            </div>
+
+            {/* Profile icon */}
+            <div className="relative" ref={profileRef}>
+              <Button
+                className="p-2 relative hover:bg-transparent"
+                onClick={toggleProfileMenu}
+              >
+                <ProfileLogoSvg className="w-6 h-6 cursor-pointer text-[#4d4d4d] hover:text-color-1 transition-colors" />
+              </Button>
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                  <div className="py-1">
                     <button
-                      onClick={toggleNotifications}
+                      onClick={handleRequestBlood}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:hidden"
+                    >
+                      Request Blood
+                    </button>
+                    <button
+                      onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Notifications
-                      {notificationCount > 0 && (
-                        <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-500 rounded-full">
-                          {notificationCount}
-                        </span>
-                      )}
+                      Logout
                     </button>
                   </div>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {isDonorDashboard && (
-          <div className="hidden md:block relative" ref={notificationRef}>
-            <Button
-              className="p-2 relative hover:bg-transparent"
-              onClick={toggleNotifications}
-            >
-              <NotificationLogoSvg className="w-6 h-6 cursor-pointer text-[#4d4d4d] hover:text-color-1 transition-colors" />
-              {notificationCount > 0 && (
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-green-500 rounded-full">
-                  {notificationCount}
-                </span>
               )}
-            </Button>
+            </div>
           </div>
         )}
       </div>
-
-      {showNotifications && (
-        <div className="absolute right-0 top-16 mt-2 w-80 bg-white rounded-md shadow-lg z-20 md:right-4 md:top-14">
-          <div className="py-2 max-h-96 overflow-y-auto">
-            {notifications.length > 0 ? (
-              notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className="px-4 py-3 hover:bg-red-200 bg-red-100 cursor-pointer mb-2 rounded"
-                  onClick={() => handleNotificationClick(notification)}
-                >
-                  <p className="font-semibold">
-                    Blood Type: {notification.blood_type_requested}
-                  </p>
-                  <p>Urgency: {notification.urgency_level}</p>
-                  <p>Location: {notification.location}</p>
-                  <p>Phone Number: {notification.phone_number}</p>
-                </div>
-              ))
-            ) : (
-              <div className="px-4 py-2">No new notifications</div>
-            )}
-            {error && <div className="px-4 py-2 text-red-500">{error}</div>}
-          </div>
-        </div>
-      )}
 
       <Popup
         isOpen={showLogoutConfirmation}
