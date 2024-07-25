@@ -56,9 +56,20 @@ export default {
       },
       transitionDuration: {
         DEFAULT: "200ms",
+        0: "0ms",
+        300: "300ms",
+        500: "500ms",
+        700: "700ms",
+        1000: "1000ms",
       },
       transitionTimingFunction: {
         DEFAULT: "linear",
+        "in-expo": "cubic-bezier(0.95, 0.05, 0.795, 0.035)",
+        "out-expo": "cubic-bezier(0.19, 1, 0.22, 1)",
+      },
+      transitionProperty: {
+        height: "height",
+        spacing: "margin, padding",
       },
       zIndex: {
         1: "1",
