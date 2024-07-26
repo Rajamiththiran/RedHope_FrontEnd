@@ -131,3 +131,55 @@ export const deleteDonationHistory = async (id) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const createEvent = async (eventData) => {
+  try {
+    const response = await api.post("/donors/events/create", eventData);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creating event:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getEvents = async (donorId) => {
+  try {
+    const response = await api.get(`/donors/events/browse/${donorId}`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching events:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error.message;
+  }
+};
+
+export const updateEvent = async (eventId, eventData) => {
+  try {
+    const response = await api.put(`/donors/events/${eventId}`, eventData);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error updating event:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error.message;
+  }
+};
+
+export const deleteEvent = async (eventId) => {
+  try {
+    const response = await api.delete(`/donors/events/${eventId}`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error deleting event:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error.message;
+  }
+};
