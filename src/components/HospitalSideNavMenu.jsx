@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const HospitalSideNavMenu = ({ isOpen, onClose }) => {
   const sideNavRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -10,12 +11,16 @@ const HospitalSideNavMenu = ({ isOpen, onClose }) => {
         onClose();
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
+
+  const handleExplore = () => {
+    navigate("/common-dashboard");
+    onClose();
+  };
 
   return (
     <div
@@ -37,12 +42,12 @@ const HospitalSideNavMenu = ({ isOpen, onClose }) => {
               </Link>
             </li>
             <li>
-              <Link
-                to="/hospital-explore"
-                className="block py-2 px-4 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors"
+              <button
+                onClick={handleExplore}
+                className="block w-full text-left py-2 px-4 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors"
               >
                 Explore
-              </Link>
+              </button>
             </li>
           </ul>
         </nav>
