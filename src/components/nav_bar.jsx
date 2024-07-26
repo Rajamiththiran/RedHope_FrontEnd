@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import HospitalProfileSvg from "../assets/svg/HospitalProfileSvg";
 import LogoSvg from "../assets/svg/LogoSvg";
 import NotificationLogoSvg from "../assets/svg/NotificationLogoSvg";
 import ProfileLogoSvg from "../assets/svg/ProfileLogoSvg";
@@ -39,6 +40,7 @@ const NavBar = () => {
     handleNavigation("/request-blood");
     setShowProfileMenu(false);
   };
+
   const handleLogoClick = () => handleNavigation("/");
 
   const fetchNotifications = async () => {
@@ -128,6 +130,7 @@ const NavBar = () => {
   };
 
   const isDonorDashboard = location.pathname === "/donor-dashboard";
+  const isHospitalDashboard = location.pathname === "/hospital-dashboard";
 
   const renderNotifications = () => (
     <div
@@ -157,7 +160,11 @@ const NavBar = () => {
   );
 
   return (
-    <nav className="flex items-center justify-between p-4 bg-white shadow-md">
+    <nav
+      className={`flex items-center justify-between p-4 bg-white shadow-md ${
+        isHospitalDashboard ? "hospital-nav" : ""
+      }`}
+    >
       <div
         className="flex items-center space-x-2 cursor-pointer transition-page"
         onClick={handleLogoClick}
@@ -168,20 +175,19 @@ const NavBar = () => {
           <span className="text-green-500">Hope</span>
         </span>
       </div>
-
       <div className="flex items-center space-x-4">
         <div className="hidden md:block">
           <Button
-            className="text-black transition-page"
+            className={`text-black transition-page ${
+              isHospitalDashboard ? "text-[#62b5f6]" : ""
+            }`}
             onClick={handleRequestBlood}
           >
             Request Blood
           </Button>
         </div>
-
         {isDonorDashboard && (
           <div className="flex items-center space-x-2">
-            {/* Notification icon for all devices */}
             <div className="relative" ref={notificationRef}>
               <Button
                 className="p-2 relative hover:bg-transparent"
@@ -200,8 +206,6 @@ const NavBar = () => {
                 </div>
               )}
             </div>
-
-            {/* Profile icon */}
             <div className="relative" ref={profileRef}>
               <Button
                 className="p-2 relative hover:bg-transparent"
@@ -230,8 +234,29 @@ const NavBar = () => {
             </div>
           </div>
         )}
+        {isHospitalDashboard && (
+          <div className="relative" ref={profileRef}>
+            <Button
+              className="p-2 relative hover:bg-transparent"
+              onClick={toggleProfileMenu}
+            >
+              <HospitalProfileSvg className="w-6 h-6 cursor-pointer text-[#62b5f6] hover:text-blue-700 transition-colors" />
+            </Button>
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <div className="py-1">
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-
       <Popup
         isOpen={showLogoutConfirmation}
         onClose={cancelLogout}
