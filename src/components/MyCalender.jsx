@@ -1,6 +1,6 @@
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import enUS from "date-fns/locale/en-US";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import DatePicker from "react-datepicker";
