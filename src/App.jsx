@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import ButtonGradient from "./assets/svg/ButtonGradient";
+import CommonDashboard from "./components/comon_dashboard";
 import DonorDashboard from "./components/donor_dashboard";
 import DonorRegister from "./components/donor_register";
 import Home from "./components/home";
@@ -38,6 +39,7 @@ const App = () => {
         <Route path="/hospital-dashboard" element={<HospitalDashboard />} />
         <Route path="/request-details/:id" element={<RequestDetails />} />
         <Route path="/my-calendar" element={<MyCalendar />} />
+        <Route path="/common-dashboard" element={<CommonDashboard />} />
       </Routes>
       <ButtonGradient />
     </>
