@@ -11,6 +11,7 @@ const HospitalSideNavMenu = ({ isOpen, onClose }) => {
         onClose();
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -37,6 +38,7 @@ const HospitalSideNavMenu = ({ isOpen, onClose }) => {
               <Link
                 to="/hospital-feed"
                 className="block py-2 px-4 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors"
+                onClick={onClose}
               >
                 My Feed
               </Link>

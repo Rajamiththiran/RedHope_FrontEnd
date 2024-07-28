@@ -45,7 +45,7 @@ const HospitalDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-white flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 to-white flex flex-col relative overflow-hidden">
       <HospitalSideNavToggle isOpen={isSideNavOpen} onClick={toggleSideNav} />
       <HospitalSideNavMenu
         isOpen={isSideNavOpen}
