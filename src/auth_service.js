@@ -37,6 +37,7 @@ export const loginHospital = async (email, password) => {
       email,
       password,
     });
+    console.log("Raw response from backend:", response);
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
@@ -196,9 +197,26 @@ export const createEventPost = async (eventData) => {
 
 export const getHospitalEventPosts = async (hospitalId) => {
   try {
-    const response = await api.get(`/hospital/event_posts/${hospitalId}`);
+    if (!Number.isInteger(hospitalId)) {
+      throw new Error("Hospital ID must be an integer");
+    }
+    console.log(`Fetching event posts for hospital ID: ${hospitalId}`);
+    let url = `/hospital/event_posts/browse/${hospitalId}`;
+
+    console.log(`API request URL: ${url}`);
+    const response = await api.get(url);
+    console.log("API response data:", response.data);
     return response.data;
   } catch (error) {
+    console.error("API error:", error);
+    if (error.response) {
+      console.error("Error response:", error.response.data);
+      console.error("Error status:", error.response.status);
+    } else if (error.request) {
+      console.error("Error request:", error.request);
+    } else {
+      console.error("Error message:", error.message);
+    }
     throw error.response ? error.response.data : error.message;
   }
 };

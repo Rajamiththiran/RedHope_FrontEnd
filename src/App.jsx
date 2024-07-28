@@ -8,6 +8,7 @@ import Home from "./components/home";
 import HospitalDashboard from "./components/hospital_dashboard";
 import HospitalRegister from "./components/hospital_register";
 
+import HospitalFeed from "./components/HospitalFeed";
 import Login from "./components/login";
 import MyCalendar from "./components/MyCalender";
 import NavBar from "./components/nav_bar";
@@ -41,6 +42,7 @@ const App = () => {
         <Route path="/request-details/:id" element={<RequestDetails />} />
         <Route path="/my-calendar" element={<MyCalendar />} />
         <Route path="/common-dashboard" element={<CommonDashboard />} />
+        <Route path="/hospital-feed" element={<HospitalFeed />} />
       </Routes>
       <ButtonGradient />
     </>
