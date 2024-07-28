@@ -39,6 +39,15 @@ const Login = () => {
         response = await loginHospital(formData.email, formData.password);
         localStorage.setItem("token", response.token);
         localStorage.setItem("userType", "hospital");
+        localStorage.setItem(
+          "hospitalInfo",
+          JSON.stringify({
+            id: response.id, // Ensure this field is present in the response
+            name: response.name,
+            phone_number: response.phone_number,
+            address: response.address,
+          })
+        );
         navigate("/hospital-dashboard");
       }
       console.log("Login successful", response);
@@ -99,7 +108,7 @@ const Login = () => {
         </form>
         {error && <p className="text-red-500 text-center mt-4">{error}</p>}
         <p className="mt-4 text-center text-gray-600">
-          Don`t have an account?{" "}
+          Don't have an account?{" "}
           <Link
             to="/"
             className="text-red-500 hover:text-red-700 transition-colors duration-200"

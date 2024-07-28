@@ -134,6 +134,14 @@ export default {
       },
     },
   },
+  variants: {
+    extend: {
+      // ... other variant extensions
+      opacity: ["responsive", "hover", "focus", "group-hover", "group-focus"],
+      transform: ["responsive", "hover", "focus", "group-hover", "group-focus"],
+      scale: ["responsive", "hover", "focus", "group-hover", "group-focus"],
+    },
+  },
   plugins: [
     plugin(function ({ addBase, addComponents, addUtilities }) {
       addBase({});

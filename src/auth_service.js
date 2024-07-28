@@ -183,3 +183,22 @@ export const deleteEvent = async (eventId) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const createEventPost = async (eventData) => {
+  try {
+    const response = await api.post("/hospital/event_posts/create", eventData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating event post:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getHospitalEventPosts = async (hospitalId) => {
+  try {
+    const response = await api.get(`/hospital/event_posts/${hospitalId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
