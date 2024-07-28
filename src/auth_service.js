@@ -220,3 +220,36 @@ export const getHospitalEventPosts = async (hospitalId) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getEventPost = async (id) => {
+  try {
+    const response = await api.get(`/hospital/event_posts/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching event post:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const updateEventPost = async (id, eventData) => {
+  try {
+    console.log("Updating event post with ID:", id);
+    console.log("Event data being sent:", eventData);
+    const response = await api.put(`/hospital/event_posts/${id}`, eventData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating event post:", error);
+    console.error("Error response:", error.response?.data);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const deleteEventPost = async (id) => {
+  try {
+    const response = await api.delete(`/hospital/event_posts/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting event post:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};

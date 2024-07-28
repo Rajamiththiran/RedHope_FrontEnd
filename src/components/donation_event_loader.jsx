@@ -61,6 +61,11 @@ const DonationEventLoader = () => {
     setExpanded(true);
   };
 
+  const showLess = () => {
+    setVisiblePosts(6);
+    setExpanded(false);
+  };
+
   const filteredEventPosts = eventPosts.filter((event) => {
     if (!startDate && !endDate) return true;
     const eventDate = moment(event.start_time);
@@ -69,6 +74,10 @@ const DonationEventLoader = () => {
       (!endDate || eventDate.isSameOrBefore(moment(endDate)))
     );
   });
+
+  const handleEventClick = (eventId) => {
+    navigate(`/event-view/${eventId}`);
+  };
 
   if (loading) {
     return <div className="text-white text-center">Loading event posts...</div>;
@@ -117,7 +126,9 @@ const DonationEventLoader = () => {
         }`}
       >
         {filteredEventPosts.slice(0, visiblePosts).map((event) => (
-          <EventCard key={event.id} event={event} />
+          <div key={event.id} onClick={() => handleEventClick(event.id)}>
+            <EventCard event={event} />
+          </div>
         ))}
       </div>
 
@@ -125,7 +136,7 @@ const DonationEventLoader = () => {
         <p className="text-white text-center">No event posts available.</p>
       )}
 
-      {!expanded && filteredEventPosts.length > 6 && (
+      {!expanded && filteredEventPosts.length > 6 ? (
         <button
           onClick={loadMore}
           className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
@@ -144,7 +155,26 @@ const DonationEventLoader = () => {
             />
           </svg>
         </button>
-      )}
+      ) : expanded ? (
+        <button
+          onClick={showLess}
+          className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
+        >
+          Show Less
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 ml-2"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      ) : null}
     </div>
   );
 };
