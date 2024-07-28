@@ -193,3 +193,12 @@ export const createEventPost = async (eventData) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getHospitalEventPosts = async (hospitalId) => {
+  try {
+    const response = await api.get(`/hospital/event_posts/${hospitalId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
