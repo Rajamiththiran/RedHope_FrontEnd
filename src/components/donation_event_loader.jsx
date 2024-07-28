@@ -1,29 +1,31 @@
-import React, { useEffect, useState } from "react";
+import moment from "moment";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getHospitalEventPosts } from "../auth_service";
 import EventCard from "./event_card";
 
 const DonationEventLoader = () => {
   const [eventPosts, setEventPosts] = useState([]);
+  const [visiblePosts, setVisiblePosts] = useState(6);
+  const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [hospitalInfo, setHospitalInfo] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedHospitalInfo = localStorage.getItem("hospitalInfo");
-    console.log("Stored hospital info:", storedHospitalInfo);
     if (storedHospitalInfo) {
       try {
         const parsedInfo = JSON.parse(storedHospitalInfo);
-        console.log("Parsed hospital info:", parsedInfo);
         setHospitalInfo(parsedInfo);
       } catch (e) {
         console.error("Error parsing hospital info:", e);
         setError("Error retrieving hospital information. Please log in again.");
       }
     } else {
-      console.log("No hospital info found in localStorage");
       setError("Hospital information not found. Please log in again.");
     }
   }, []);
@@ -36,13 +38,10 @@ const DonationEventLoader = () => {
         setLoading(false);
         return;
       }
-
       try {
-        console.log("Fetching posts for hospital ID:", hospitalInfo.id);
         const posts = await getHospitalEventPosts(
           parseInt(hospitalInfo.id, 10)
         );
-        console.log("Fetched event posts:", posts);
         setEventPosts(posts);
       } catch (err) {
         console.error("Error fetching event posts:", err);
@@ -56,6 +55,20 @@ const DonationEventLoader = () => {
       fetchEventPosts();
     }
   }, [hospitalInfo]);
+
+  const loadMore = () => {
+    setVisiblePosts(eventPosts.length);
+    setExpanded(true);
+  };
+
+  const filteredEventPosts = eventPosts.filter((event) => {
+    if (!startDate && !endDate) return true;
+    const eventDate = moment(event.start_time);
+    return (
+      (!startDate || eventDate.isSameOrAfter(moment(startDate))) &&
+      (!endDate || eventDate.isSameOrBefore(moment(endDate)))
+    );
+  });
 
   if (loading) {
     return <div className="text-white text-center">Loading event posts...</div>;
@@ -76,14 +89,61 @@ const DonationEventLoader = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] bg-opacity-90 rounded-lg shadow-lg p-10 w-full max-w-3xl flex flex-col justify-between z-10 mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {eventPosts.slice(0, 3).map((event) => (
+    <div className="w-full bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] p-6 rounded-lg shadow-lg">
+      <h2 className="text-3xl font-semibold text-blue-300 mb-4 text-center">
+        Donation Events
+      </h2>
+
+      <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="border p-2 rounded w-full sm:w-auto"
+          placeholder="Start Date"
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="border p-2 rounded w-full sm:w-auto"
+          placeholder="End Date"
+        />
+      </div>
+
+      <div
+        className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${
+          expanded ? "max-h-[600px] overflow-y-auto pr-4" : ""
+        }`}
+      >
+        {filteredEventPosts.slice(0, visiblePosts).map((event) => (
           <EventCard key={event.id} event={event} />
         ))}
       </div>
-      {eventPosts.length === 0 && (
+
+      {filteredEventPosts.length === 0 && (
         <p className="text-white text-center">No event posts available.</p>
+      )}
+
+      {!expanded && filteredEventPosts.length > 6 && (
+        <button
+          onClick={loadMore}
+          className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
+        >
+          Load More
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 ml-2"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
       )}
     </div>
   );

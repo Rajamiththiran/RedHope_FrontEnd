@@ -37,7 +37,7 @@ export const loginHospital = async (email, password) => {
       email,
       password,
     });
-    console.log("Raw response from backend:", response);
+
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
