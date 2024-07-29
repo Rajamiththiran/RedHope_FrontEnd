@@ -1,26 +1,24 @@
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import BloodCell from "./BloodCell";
-import Button from "./button";
+import CommonGraph from "./CommonGraph";
+import CommonSideNavMenu from "./CommonSideNavMenu";
+import CommonSideNavToggle from "./CommonSideNavToggle";
 
 const CommonDashboard = () => {
-  const navigate = useNavigate();
+  const [isSideNavOpen, setIsSideNavOpen] = useState(false);
 
-  const handleNavigation = useCallback(
-    (path) => {
-      document.body.classList.add("page-exit");
-      setTimeout(() => {
-        navigate(path);
-        document.body.classList.remove("page-exit");
-      }, 300);
-    },
-    [navigate]
-  );
-
-  const handleGoBack = () => handleNavigation("/");
+  const toggleSideNav = () => {
+    setIsSideNavOpen(!isSideNavOpen);
+  };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-red-100 to-white overflow-hidden flex justify-center items-center">
+    <div className="relative min-h-screen bg-gradient-to-b from-green-100 to-white overflow-hidden">
+      <CommonSideNavToggle isOpen={isSideNavOpen} onClick={toggleSideNav} />
+      <CommonSideNavMenu
+        isOpen={isSideNavOpen}
+        onClose={() => setIsSideNavOpen(false)}
+      />
+
       <div className="absolute inset-0">
         <BloodCell
           className="absolute top-1/12 left-1/12 animate-float"
@@ -47,22 +45,48 @@ const CommonDashboard = () => {
           size={14}
         />
       </div>
-      <div className="bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] bg-opacity-80 rounded-lg shadow-lg p-8 max-w-2xl w-full z-10">
-        <h1 className="text-3xl font-bold text-center mb-6 text-white">
-          Common Dashboard
-        </h1>
-        <p className="text-center mb-8 text-white">
-          Welcome to the Common Dashboard. Here you can explore more about our
-          blood donation platform and its features.
-        </p>
-        <div className="flex justify-center">
-          <Button
-            className="from-[#5b5b5b] text-white transition-all duration-200 ease-in-out transform hover:scale-105"
-            onClick={handleGoBack}
-          >
-            Go Back to Home
-          </Button>
-        </div>
+
+      <div className="relative z-10 p-8 pt-24">
+        {" "}
+        {/* Added pt-24 for top padding */}
+        <section
+          id="donation-events"
+          className="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-green-500"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-green-700">
+            Donation Events Posts
+          </h2>
+          {/* Content for donation events posts will go here */}
+        </section>
+        <div className="border-t border-green-300 my-8"></div>
+        <section
+          id="donor-thoughts"
+          className="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-green-500"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-green-700">
+            Thoughts of Donors
+          </h2>
+          {/* Content for thoughts of donors will go here */}
+        </section>
+        <div className="border-t border-green-300 my-8"></div>
+        <section
+          id="hospital-knowledge"
+          className="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-green-500"
+        >
+          <h2 className="text-2xl font-bold mb-4 text-green-700">
+            Knowledges from Hospitals
+          </h2>
+          {/* Content for knowledges from hospitals will go here */}
+        </section>
+        <div className="border-t border-green-300 my-8"></div>
+        <section
+          id="graphs"
+          className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500"
+          style={{ height: "400px" }}
+        >
+          <h2 className="text-2xl font-bold mb-4 text-green-700">Graphs</h2>
+          <CommonGraph />
+        </section>
       </div>
     </div>
   );
