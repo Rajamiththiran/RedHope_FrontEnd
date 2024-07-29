@@ -253,3 +253,17 @@ export const deleteEventPost = async (id) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getStatsCounts = async (startDate, endDate) => {
+  try {
+    const params = new URLSearchParams();
+    if (startDate) params.append("start_date", startDate);
+    if (endDate) params.append("end_date", endDate);
+
+    const response = await api.get(`/stats/counts?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching stats counts:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
