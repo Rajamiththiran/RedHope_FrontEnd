@@ -10,6 +10,7 @@ const EventPostForm = ({ onSubmit, onCancel }) => {
     title: "",
     start_time: new Date(),
     end_time: new Date(),
+    hospital_name: "",
     location: "",
     description: "",
   });
@@ -168,6 +169,24 @@ const EventPostForm = ({ onSubmit, onCancel }) => {
             name="location"
             id="location"
             value={formData.location}
+            onChange={handleInputChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            required
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="hospital_name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Hospital Name
+          </label>
+          <input
+            type="text"
+            name="hospital_name"
+            id="hospital_name"
+            value={formData.hospital_name}
             onChange={handleInputChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required

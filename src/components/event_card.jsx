@@ -19,6 +19,10 @@ const EventCard = ({ event }) => {
         <p className="text-sm text-gray-700">
           <span className="font-semibold">Location:</span> {event.location}
         </p>
+        <p className="text-sm text-gray-700">
+          <span className="font-semibold">Hospital Name:</span>{" "}
+          {event.hospital_name}
+        </p>
       </div>
     </div>
   );
