@@ -3,6 +3,7 @@ import BloodCell from "./BloodCell";
 import CommonGraph from "./CommonGraph";
 import CommonSideNavMenu from "./CommonSideNavMenu";
 import CommonSideNavToggle from "./CommonSideNavToggle";
+import CommonEventLoader from "./common_event_loader";
 
 const CommonDashboard = () => {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
@@ -44,19 +45,50 @@ const CommonDashboard = () => {
           className="absolute top-2/3 right-1/3 animate-float-delay-2"
           size={14}
         />
+        <BloodCell
+          className="absolute top-1/8 left-3/4 animate-float-delay-1"
+          size={18}
+        />
+        <BloodCell
+          className="absolute top-5/6 right-1/2 animate-float"
+          size={11}
+        />
+        <BloodCell
+          className="absolute bottom-1/4 left-5/6 animate-float-delay-2"
+          size={15}
+        />
+        <BloodCell
+          className="absolute top-2/5 right-1/6 animate-float-delay-1"
+          size={13}
+        />
+        <BloodCell
+          className="absolute bottom-1/2 left-1/3 animate-float"
+          size={16}
+        />
+        <BloodCell
+          className="absolute top-11/12 right-2/3 animate-float-delay-2"
+          size={12}
+        />
+        <BloodCell
+          className="absolute top-1/6 left-11/12 animate-float"
+          size={17}
+        />
+        <BloodCell
+          className="absolute bottom-2/3 right-5/6 animate-float-delay-1"
+          size={14}
+        />
+        <BloodCell
+          className="absolute top-7/8 left-2/5 animate-float-delay-2"
+          size={15}
+        />
       </div>
 
       <div className="relative z-10 p-8 pt-24">
-        {" "}
-        {/* Added pt-24 for top padding */}
         <section
           id="donation-events"
           className="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-green-500"
         >
-          <h2 className="text-2xl font-bold mb-4 text-green-700">
-            Donation Events Posts
-          </h2>
-          {/* Content for donation events posts will go here */}
+          <CommonEventLoader />
         </section>
         <div className="border-t border-green-300 my-8"></div>
         <section
