@@ -40,16 +40,10 @@ const HospitalFeed = () => {
         </h1>
 
         <section className="w-full mb-8 z-10">
-          <h2 className="text-3xl font-semibold text-blue-300 mb-4 text-center">
-            Donation Events
-          </h2>
           <DonationEventLoader />
         </section>
-
+        <div className="border-t border-blue-700 my-8"></div>
         <section className="w-full z-10">
-          <h2 className="text-3xl font-semibold text-blue-300 mb-4 text-center">
-            Knowledges
-          </h2>
           <KnowledgeLoader />
         </section>
       </div>
