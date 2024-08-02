@@ -267,3 +267,17 @@ export const getStatsCounts = async (startDate, endDate) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getAllEventPosts = async (startDate, endDate) => {
+  try {
+    const params = new URLSearchParams();
+    if (startDate) params.append("start_date", startDate);
+    if (endDate) params.append("end_date", endDate);
+
+    const response = await api.get(`/hospital/event_posts/all?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all event posts:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
