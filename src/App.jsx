@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import ButtonGradient from "./assets/svg/ButtonGradient";
 import CommonEventView from "./components/common_event_view";
+import CommonKnowledgeView from "./components/common_knowledge_view";
 import CommonDashboard from "./components/comon_dashboard";
 import DonorDashboard from "./components/donor_dashboard";
 import DonorRegister from "./components/donor_register";
@@ -48,6 +49,10 @@ const App = () => {
         <Route path="/event-view/:id" element={<EventView />} />
         <Route path="/common-event-view/:id" element={<CommonEventView />} />
         <Route path="/knowledge-view/:id" element={<KnowledgeView />} />
+        <Route
+          path="/common-knowledge-view/:id"
+          element={<CommonKnowledgeView />}
+        />
       </Routes>
       <ButtonGradient />
     </>
