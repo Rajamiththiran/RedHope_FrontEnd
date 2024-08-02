@@ -352,3 +352,13 @@ export const deleteKnowledge = async (id) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getAllKnowledges = async () => {
+  try {
+    const response = await api.get("/hospital/knowledges/all");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all knowledges:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
