@@ -4,11 +4,13 @@ import HospitalSideNavMenu from "./HospitalSideNavMenu";
 import HospitalSideNavToggle from "./HospitalSideNavToggle";
 import Button from "./button";
 import EventPostForm from "./event_post_form";
+import KnowledgePostForm from "./knowledge_post_form";
 import Popup from "./popup";
 
 const HospitalDashboard = () => {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
   const [showEventPostPopup, setShowEventPostPopup] = useState(false);
+  const [showKnowledgePostPopup, setShowKnowledgePostPopup] = useState(false);
   const [notification, setNotification] = useState(null);
   const [recentEvents, setRecentEvents] = useState([]);
 
@@ -40,8 +42,16 @@ const HospitalDashboard = () => {
   };
 
   const handlePostKnowledge = () => {
-    // Implement post knowledge functionality
-    console.log("Post knowledge clicked");
+    setShowKnowledgePostPopup(true);
+  };
+
+  const handleKnowledgePostSubmit = (knowledgeData) => {
+    console.log("Knowledge post submitted:", knowledgeData);
+    setShowKnowledgePostPopup(false);
+
+    // Show notification
+    setNotification("Knowledge post created successfully!");
+    setTimeout(() => setNotification(null), 3000);
   };
 
   return (
@@ -142,6 +152,16 @@ const HospitalDashboard = () => {
         <EventPostForm
           onSubmit={handleEventPostSubmit}
           onCancel={() => setShowEventPostPopup(false)}
+        />
+      </Popup>
+      <Popup
+        isOpen={showKnowledgePostPopup}
+        onClose={() => setShowKnowledgePostPopup(false)}
+        title="Post Knowledge"
+      >
+        <KnowledgePostForm
+          onSubmit={handleKnowledgePostSubmit}
+          onCancel={() => setShowKnowledgePostPopup(false)}
         />
       </Popup>
     </div>

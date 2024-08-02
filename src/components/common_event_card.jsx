@@ -1,8 +1,8 @@
 import moment from "moment";
 
-const EventCard = ({ event }) => {
+const CommonEventCard = ({ event }) => {
   return (
-    <div className="bg-gradient-to-br from-blue-400 to-white rounded-lg shadow-lg p-6 flex flex-col justify-between h-full">
+    <div className="bg-gradient-to-br from-green-400 to-white rounded-lg shadow-lg p-6 flex flex-col justify-between h-full cursor-pointer hover:shadow-xl transition-shadow duration-300">
       <div>
         <h3 className="text-xl font-bold mb-2 text-gray-800">{event.title}</h3>
         <p className="text-gray-600 mb-4">{event.description}</p>
@@ -28,4 +28,4 @@ const EventCard = ({ event }) => {
   );
 };
 
-export default EventCard;
+export default CommonEventCard;
