@@ -281,3 +281,74 @@ export const getAllEventPosts = async (startDate, endDate) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const createKnowledge = async (knowledgeData) => {
+  try {
+    const response = await api.post(
+      "/hospital/knowledges/create",
+      knowledgeData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error creating knowledge post:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getHospitalKnowledges = async (hospitalId) => {
+  try {
+    if (!Number.isInteger(hospitalId)) {
+      throw new Error("Hospital ID must be an integer");
+    }
+    console.log(`Fetching knowledges for hospital ID: ${hospitalId}`);
+    let url = `/hospital/knowledges/browse/${hospitalId}`;
+
+    console.log(`API request URL: ${url}`);
+    const response = await api.get(url);
+    console.log("API response data:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("API error:", error);
+    if (error.response) {
+      console.error("Error response:", error.response.data);
+      console.error("Error status:", error.response.status);
+    } else if (error.request) {
+      console.error("Error request:", error.request);
+    } else {
+      console.error("Error message:", error.message);
+    }
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Add these functions to your existing auth_service.js file
+
+export const getKnowledge = async (id) => {
+  try {
+    const response = await api.get(`/hospital/knowledges/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching knowledge:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const updateKnowledge = async (id, knowledgeData) => {
+  try {
+    const response = await api.put(`/hospital/knowledges/${id}`, knowledgeData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating knowledge:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const deleteKnowledge = async (id) => {
+  try {
+    const response = await api.delete(`/hospital/knowledges/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting knowledge:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
