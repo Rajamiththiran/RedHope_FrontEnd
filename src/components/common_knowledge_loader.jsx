@@ -1,62 +1,48 @@
-import moment from "moment";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllEventPosts } from "../auth_service";
-import CommonEventCard from "./common_event_card";
+import { getAllKnowledges } from "../auth_service";
+import CommonKnowledgeCard from "./common_knowledge_card";
 
-const CommonEventLoader = () => {
-  const [eventPosts, setEventPosts] = useState([]);
-  const [visiblePosts, setVisiblePosts] = useState(6);
+const CommonKnowledgeLoader = () => {
+  const [knowledges, setKnowledges] = useState([]);
+  const [visibleKnowledges, setVisibleKnowledges] = useState(6);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchEventPosts = async () => {
+    const fetchKnowledges = async () => {
       try {
-        const posts = await getAllEventPosts();
-        setEventPosts(posts);
+        const fetchedKnowledges = await getAllKnowledges();
+        setKnowledges(fetchedKnowledges);
       } catch (err) {
-        console.error("Error fetching event posts:", err);
-        setError(`Failed to fetch event posts: ${err.message}`);
+        console.error("Error fetching knowledges:", err);
+        setError(`Failed to fetch knowledges: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEventPosts();
+    fetchKnowledges();
   }, []);
 
   const loadMore = () => {
-    setVisiblePosts(eventPosts.length);
+    setVisibleKnowledges(knowledges.length);
     setExpanded(true);
   };
 
   const showLess = () => {
-    setVisiblePosts(6);
+    setVisibleKnowledges(6);
     setExpanded(false);
   };
 
-  const filteredEventPosts = eventPosts.filter((event) => {
-    if (!startDate && !endDate) return true;
-    const eventDate = moment(event.start_time);
-    return (
-      (!startDate || eventDate.isSameOrAfter(moment(startDate))) &&
-      (!endDate || eventDate.isSameOrBefore(moment(endDate)))
-    );
-  });
-
-  const handleEventClick = (eventId) => {
-    navigate(`/common-event-view/${eventId}`);
+  const handleKnowledgeClick = (knowledgeId) => {
+    navigate(`/common-knowledge-view/${knowledgeId}`);
   };
 
   if (loading) {
-    return (
-      <div className="text-gray-600 text-center">Loading event posts...</div>
-    );
+    return <div className="text-white text-center">Loading knowledges...</div>;
   }
 
   if (error) {
@@ -65,44 +51,26 @@ const CommonEventLoader = () => {
 
   return (
     <div className="w-full bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] p-6 rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold text-green-700 mb-4 text-center">
-        Donation Events
-      </h2>
-
-      <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="border p-2 rounded w-full sm:w-auto"
-          placeholder="Start Date"
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="border p-2 rounded w-full sm:w-auto"
-          placeholder="End Date"
-        />
-      </div>
-
       <div
         className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${
           expanded ? "max-h-[600px] overflow-y-auto pr-4" : ""
         }`}
       >
-        {filteredEventPosts.slice(0, visiblePosts).map((event) => (
-          <div key={event.id} onClick={() => handleEventClick(event.id)}>
-            <CommonEventCard event={event} />
+        {knowledges.slice(0, visibleKnowledges).map((knowledge) => (
+          <div
+            key={knowledge.id}
+            onClick={() => handleKnowledgeClick(knowledge.id)}
+          >
+            <CommonKnowledgeCard knowledge={knowledge} />
           </div>
         ))}
       </div>
 
-      {filteredEventPosts.length === 0 && (
-        <p className="text-gray-600 text-center">No event posts available.</p>
+      {knowledges.length === 0 && (
+        <p className="text-gray-700 text-center">No knowledges available.</p>
       )}
 
-      {!expanded && filteredEventPosts.length > 6 ? (
+      {!expanded && knowledges.length > 6 ? (
         <button
           onClick={loadMore}
           className="mt-6 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
@@ -145,4 +113,4 @@ const CommonEventLoader = () => {
   );
 };
 
-export default CommonEventLoader;
+export default CommonKnowledgeLoader;

@@ -1,9 +1,12 @@
+// src/components/common_dashboard.jsx
+
 import { useState } from "react";
 import BloodCell from "./BloodCell";
 import CommonGraph from "./CommonGraph";
 import CommonSideNavMenu from "./CommonSideNavMenu";
 import CommonSideNavToggle from "./CommonSideNavToggle";
 import CommonEventLoader from "./common_event_loader";
+import CommonKnowledgeLoader from "./common_knowledge_loader";
 
 const CommonDashboard = () => {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
@@ -108,7 +111,7 @@ const CommonDashboard = () => {
           <h2 className="text-2xl font-bold mb-4 text-green-700">
             Knowledges from Hospitals
           </h2>
-          {/* Content for knowledges from hospitals will go here */}
+          <CommonKnowledgeLoader />
         </section>
         <div className="border-t border-green-300 my-8"></div>
         <section
