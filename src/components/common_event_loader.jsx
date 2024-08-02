@@ -64,7 +64,7 @@ const CommonEventLoader = () => {
   }
 
   return (
-    <div className="w-full bg-white p-6 rounded-lg shadow-lg">
+    <div className="w-full bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] p-6 rounded-lg shadow-lg">
       <h2 className="text-3xl font-semibold text-green-700 mb-4 text-center">
         Donation Events
       </h2>
