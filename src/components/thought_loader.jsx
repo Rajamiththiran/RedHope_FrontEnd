@@ -1,86 +1,86 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getHospitalKnowledges } from "../auth_service";
-import KnowledgeCard from "./knowledge_card";
+import { getDonorThoughts } from "../auth_service";
+import ThoughtCard from "./thought_card";
 
-const KnowledgeLoader = () => {
-  const [knowledges, setKnowledges] = useState([]);
-  const [visibleKnowledges, setVisibleKnowledges] = useState(6);
+const ThoughtLoader = () => {
+  const [thoughts, setThoughts] = useState([]);
+  const [visibleThoughts, setVisibleThoughts] = useState(6);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [hospitalInfo, setHospitalInfo] = useState(null);
+  const [donorInfo, setDonorInfo] = useState(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedHospitalInfo = localStorage.getItem("hospitalInfo");
-    if (storedHospitalInfo) {
+    const storedDonorInfo = localStorage.getItem("donorInfo");
+    if (storedDonorInfo) {
       try {
-        const parsedInfo = JSON.parse(storedHospitalInfo);
-        setHospitalInfo(parsedInfo);
+        const parsedInfo = JSON.parse(storedDonorInfo);
+        setDonorInfo(parsedInfo);
       } catch (e) {
-        console.error("Error parsing hospital info:", e);
-        setError("Error retrieving hospital information. Please log in again.");
+        console.error("Error parsing donor info:", e);
+        setError("Error retrieving donor information. Please log in again.");
       }
     } else {
-      setError("Hospital information not found. Please log in again.");
+      setError("Donor information not found. Please log in again.");
     }
   }, []);
 
   useEffect(() => {
-    const fetchKnowledges = async () => {
-      if (!hospitalInfo || !hospitalInfo.id) {
-        console.error("Hospital ID is missing or invalid:", hospitalInfo);
-        setError("Invalid hospital information. Please log in again.");
+    const fetchThoughts = async () => {
+      if (!donorInfo || !donorInfo.id) {
+        console.error("Donor ID is missing or invalid:", donorInfo);
+        setError("Invalid donor information. Please log in again.");
         setLoading(false);
         return;
       }
       try {
-        const fetchedKnowledges = await getHospitalKnowledges(
-          parseInt(hospitalInfo.id, 10)
+        const fetchedThoughts = await getDonorThoughts(
+          parseInt(donorInfo.id, 10)
         );
-        setKnowledges(fetchedKnowledges);
+        setThoughts(fetchedThoughts);
       } catch (err) {
-        console.error("Error fetching knowledges:", err);
-        setError(`Failed to fetch knowledges: ${err.message}`);
+        console.error("Error fetching thoughts:", err);
+        setError(`Failed to fetch thoughts: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
 
-    if (hospitalInfo) {
-      fetchKnowledges();
+    if (donorInfo) {
+      fetchThoughts();
     }
-  }, [hospitalInfo]);
+  }, [donorInfo]);
 
   const loadMore = () => {
-    setVisibleKnowledges(knowledges.length);
+    setVisibleThoughts(thoughts.length);
     setExpanded(true);
   };
 
   const showLess = () => {
-    setVisibleKnowledges(6);
+    setVisibleThoughts(6);
     setExpanded(false);
   };
 
-  const handleKnowledgeClick = (knowledgeId) => {
-    navigate(`/knowledge-view/${knowledgeId}`);
+  const handleThoughtClick = (thoughtId) => {
+    navigate(`/thought-view/${thoughtId}`);
   };
 
-  const filteredKnowledges = knowledges.filter((knowledge) => {
+  const filteredThoughts = thoughts.filter((thought) => {
     if (!startDate && !endDate) return true;
-    const knowledgeDate = moment(knowledge.created_at);
+    const thoughtDate = moment(thought.created_at);
     return (
-      (!startDate || knowledgeDate.isSameOrAfter(moment(startDate))) &&
-      (!endDate || knowledgeDate.isSameOrBefore(moment(endDate)))
+      (!startDate || thoughtDate.isSameOrAfter(moment(startDate))) &&
+      (!endDate || thoughtDate.isSameOrBefore(moment(endDate)))
     );
   });
 
   if (loading) {
-    return <div className="text-white text-center">Loading knowledges...</div>;
+    return <div className="text-white text-center">Loading thoughts...</div>;
   }
 
   if (error) {
@@ -99,8 +99,8 @@ const KnowledgeLoader = () => {
 
   return (
     <div className="w-full bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] p-6 rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold text-blue-300 mb-4 text-center">
-        Knowledge Base
+      <h2 className="text-3xl font-semibold text-red-300 mb-4 text-center">
+        My Thoughts
       </h2>
 
       <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
@@ -125,24 +125,21 @@ const KnowledgeLoader = () => {
           expanded ? "max-h-[600px] overflow-y-auto pr-4" : ""
         }`}
       >
-        {filteredKnowledges.slice(0, visibleKnowledges).map((knowledge) => (
-          <div
-            key={knowledge.id}
-            onClick={() => handleKnowledgeClick(knowledge.id)}
-          >
-            <KnowledgeCard knowledge={knowledge} />
+        {filteredThoughts.slice(0, visibleThoughts).map((thought) => (
+          <div key={thought.id} onClick={() => handleThoughtClick(thought.id)}>
+            <ThoughtCard thought={thought} />
           </div>
         ))}
       </div>
 
-      {filteredKnowledges.length === 0 && (
-        <p className="text-white text-center">No knowledges available.</p>
+      {filteredThoughts.length === 0 && (
+        <p className="text-white text-center">No thoughts available.</p>
       )}
 
-      {!expanded && filteredKnowledges.length > 6 ? (
+      {!expanded && filteredThoughts.length > 6 ? (
         <button
           onClick={loadMore}
-          className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
+          className="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
         >
           Load More
           <svg
@@ -161,7 +158,7 @@ const KnowledgeLoader = () => {
       ) : expanded ? (
         <button
           onClick={showLess}
-          className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
+          className="mt-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
         >
           Show Less
           <svg
@@ -182,4 +179,4 @@ const KnowledgeLoader = () => {
   );
 };
 
-export default KnowledgeLoader;
+export default ThoughtLoader;
