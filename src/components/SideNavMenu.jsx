@@ -35,7 +35,7 @@ const SideNavMenu = ({ isOpen, onClose }) => {
           <ul className="space-y-4">
             <li>
               <Link
-                to="/my-feed"
+                to="/donors-feed"
                 className="block py-2 px-4 text-white hover:bg-white hover:bg-opacity-20 rounded transition-colors"
               >
                 My Feed
