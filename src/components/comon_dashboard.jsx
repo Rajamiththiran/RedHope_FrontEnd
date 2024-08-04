@@ -7,6 +7,7 @@ import CommonSideNavMenu from "./CommonSideNavMenu";
 import CommonSideNavToggle from "./CommonSideNavToggle";
 import CommonEventLoader from "./common_event_loader";
 import CommonKnowledgeLoader from "./common_knowledge_loader";
+import CommonThoughtLoader from "./common_thought_loader";
 
 const CommonDashboard = () => {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
@@ -91,6 +92,9 @@ const CommonDashboard = () => {
           id="donation-events"
           className="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-green-500"
         >
+          <h2 className="text-2xl font-bold mb-4 text-green-700">
+            Donation Events From Hospitals
+          </h2>
           <CommonEventLoader />
         </section>
         <div className="border-t border-green-300 my-8"></div>
@@ -101,7 +105,7 @@ const CommonDashboard = () => {
           <h2 className="text-2xl font-bold mb-4 text-green-700">
             Thoughts of Donors
           </h2>
-          {/* Content for thoughts of donors will go here */}
+          <CommonThoughtLoader />
         </section>
         <div className="border-t border-green-300 my-8"></div>
         <section

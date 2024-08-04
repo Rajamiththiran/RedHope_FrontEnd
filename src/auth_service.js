@@ -362,3 +362,63 @@ export const getAllKnowledges = async () => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const createThought = async (thoughtData) => {
+  try {
+    const response = await api.post("/donors/thoughts/create", thoughtData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating thought:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getAllThoughts = async () => {
+  try {
+    const response = await api.get("/donors/thoughts/all");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all thoughts:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getThought = async (id) => {
+  try {
+    const response = await api.get(`/donors/thoughts/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching thought:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const updateThought = async (id, thoughtData) => {
+  try {
+    const response = await api.put(`/donors/thoughts/${id}`, thoughtData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating thought:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const deleteThought = async (id) => {
+  try {
+    const response = await api.delete(`/donors/thoughts/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting thought:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getDonorThoughts = async (donorId) => {
+  try {
+    const response = await api.get(`/donors/thoughts/browse/${donorId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching donor thoughts:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};

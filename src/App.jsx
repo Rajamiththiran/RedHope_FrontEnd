@@ -3,9 +3,11 @@ import { Route, Routes } from "react-router-dom";
 import ButtonGradient from "./assets/svg/ButtonGradient";
 import CommonEventView from "./components/common_event_view";
 import CommonKnowledgeView from "./components/common_knowledge_view";
+import CommonThoughtView from "./components/common_thought_view";
 import CommonDashboard from "./components/comon_dashboard";
 import DonorDashboard from "./components/donor_dashboard";
 import DonorRegister from "./components/donor_register";
+import DonorsFeed from "./components/DonorsFeed";
 import EventView from "./components/EventView";
 import Home from "./components/home";
 import HospitalDashboard from "./components/hospital_dashboard";
@@ -18,6 +20,7 @@ import NavBar from "./components/nav_bar";
 import Notification from "./components/Notification";
 import RequestDetails from "./components/request_details";
 import Request from "./components/requests";
+import ThoughtView from "./components/ThoughtView";
 import { requestNotificationPermission } from "./config/FirebaseInit";
 
 const App = () => {
@@ -49,6 +52,12 @@ const App = () => {
         <Route path="/event-view/:id" element={<EventView />} />
         <Route path="/common-event-view/:id" element={<CommonEventView />} />
         <Route path="/knowledge-view/:id" element={<KnowledgeView />} />
+        <Route path="/donors-feed" element={<DonorsFeed />} />
+        <Route path="/thought-view/:id" element={<ThoughtView />} />
+        <Route
+          path="/common-thought-view/:id"
+          element={<CommonThoughtView />}
+        />
         <Route
           path="/common-knowledge-view/:id"
           element={<CommonKnowledgeView />}
