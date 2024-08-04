@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import ButtonGradient from "./assets/svg/ButtonGradient";
 import CommonEventView from "./components/common_event_view";
 import CommonKnowledgeView from "./components/common_knowledge_view";
+import CommonThoughtView from "./components/common_thought_view";
 import CommonDashboard from "./components/comon_dashboard";
 import DonorDashboard from "./components/donor_dashboard";
 import DonorRegister from "./components/donor_register";
@@ -53,6 +54,10 @@ const App = () => {
         <Route path="/knowledge-view/:id" element={<KnowledgeView />} />
         <Route path="/donors-feed" element={<DonorsFeed />} />
         <Route path="/thought-view/:id" element={<ThoughtView />} />
+        <Route
+          path="/common-thought-view/:id"
+          element={<CommonThoughtView />}
+        />
         <Route
           path="/common-knowledge-view/:id"
           element={<CommonKnowledgeView />}
