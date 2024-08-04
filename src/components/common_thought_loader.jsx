@@ -1,12 +1,12 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllKnowledges } from "../auth_service";
-import CommonKnowledgeCard from "./common_knowledge_card";
+import { getAllThoughts } from "../auth_service";
+import CommonThoughtCard from "./common_thought_card";
 
-const CommonKnowledgeLoader = () => {
-  const [knowledges, setKnowledges] = useState([]);
-  const [visibleKnowledges, setVisibleKnowledges] = useState(6);
+const CommonThoughtLoader = () => {
+  const [thoughts, setThoughts] = useState([]);
+  const [visibleThoughts, setVisibleThoughts] = useState(6);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -15,46 +15,46 @@ const CommonKnowledgeLoader = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchKnowledges = async () => {
+    const fetchThoughts = async () => {
       try {
-        const fetchedKnowledges = await getAllKnowledges();
-        setKnowledges(fetchedKnowledges);
+        const fetchedThoughts = await getAllThoughts();
+        setThoughts(fetchedThoughts);
       } catch (err) {
-        console.error("Error fetching knowledges:", err);
-        setError(`Failed to fetch knowledges: ${err.message}`);
+        console.error("Error fetching thoughts:", err);
+        setError(`Failed to fetch thoughts: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchKnowledges();
+    fetchThoughts();
   }, []);
 
   const loadMore = () => {
-    setVisibleKnowledges(knowledges.length);
+    setVisibleThoughts(thoughts.length);
     setExpanded(true);
   };
 
   const showLess = () => {
-    setVisibleKnowledges(6);
+    setVisibleThoughts(6);
     setExpanded(false);
   };
 
-  const filteredKnowledges = knowledges.filter((knowledge) => {
+  const filteredThoughts = thoughts.filter((thought) => {
     if (!startDate && !endDate) return true;
-    const knowledgeDate = moment(knowledge.created_at);
+    const thoughtDate = moment(thought.created_at);
     return (
-      (!startDate || knowledgeDate.isSameOrAfter(moment(startDate))) &&
-      (!endDate || knowledgeDate.isSameOrBefore(moment(endDate)))
+      (!startDate || thoughtDate.isSameOrAfter(moment(startDate))) &&
+      (!endDate || thoughtDate.isSameOrBefore(moment(endDate)))
     );
   });
 
-  const handleKnowledgeClick = (knowledgeId) => {
-    navigate(`/common-knowledge-view/${knowledgeId}`);
+  const handleThoughtClick = (thoughtId) => {
+    navigate(`/common-thought-view/${thoughtId}`);
   };
 
   if (loading) {
-    return <div className="text-white text-center">Loading knowledges...</div>;
+    return <div className="text-white text-center">Loading thoughts...</div>;
   }
 
   if (error) {
@@ -85,21 +85,18 @@ const CommonKnowledgeLoader = () => {
           expanded ? "max-h-[600px] overflow-y-auto pr-4" : ""
         }`}
       >
-        {filteredKnowledges.slice(0, visibleKnowledges).map((knowledge) => (
-          <div
-            key={knowledge.id}
-            onClick={() => handleKnowledgeClick(knowledge.id)}
-          >
-            <CommonKnowledgeCard knowledge={knowledge} />
+        {filteredThoughts.slice(0, visibleThoughts).map((thought) => (
+          <div key={thought.id} onClick={() => handleThoughtClick(thought.id)}>
+            <CommonThoughtCard thought={thought} />
           </div>
         ))}
       </div>
 
-      {filteredKnowledges.length === 0 && (
-        <p className="text-gray-700 text-center">No knowledges available.</p>
+      {filteredThoughts.length === 0 && (
+        <p className="text-gray-700 text-center">No thoughts available.</p>
       )}
 
-      {!expanded && filteredKnowledges.length > 6 ? (
+      {!expanded && filteredThoughts.length > 6 ? (
         <button
           onClick={loadMore}
           className="mt-6 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center mx-auto"
@@ -142,4 +139,4 @@ const CommonKnowledgeLoader = () => {
   );
 };
 
-export default CommonKnowledgeLoader;
+export default CommonThoughtLoader;
