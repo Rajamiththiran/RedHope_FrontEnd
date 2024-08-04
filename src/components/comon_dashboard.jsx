@@ -121,7 +121,7 @@ const CommonDashboard = () => {
         <section
           id="graphs"
           className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500"
-          style={{ height: "400px" }}
+          style={{ height: "800px" }}
         >
           <h2 className="text-2xl font-bold mb-4 text-green-700">Graphs</h2>
           <CommonGraph />
