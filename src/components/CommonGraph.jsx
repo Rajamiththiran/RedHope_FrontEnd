@@ -1,225 +1,175 @@
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Box, MenuItem, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
+import ReactApexChart from "react-apexcharts";
 import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { getDonationHistory, getRequestNotifications } from "../auth_service";
+  getAllDonationHistory,
+  getAllRequests,
+  getDonationHistoryByBloodType,
+  getRequestsByBloodType,
+} from "../auth_service";
+
+const CHART_TYPES = ["line", "bar"];
+const BLOOD_TYPES = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const CommonGraph = () => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [chartType, setChartType] = useState("line");
   const [bloodType, setBloodType] = useState("");
-  const [graphType, setGraphType] = useState("line");
-  const [data, setData] = useState({
-    dailyData: [],
-    bloodTypeData: [],
-    totalDonations: 0,
-    totalRequests: 0,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [requestData, setRequestData] = useState([]);
+  const [donationData, setDonationData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
-  }, [startDate, endDate, bloodType]);
+  }, [bloodType]);
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
-      setLoading(true);
-      const [donationHistory, requests] = await Promise.all([
-        getDonationHistory(),
-        getRequestNotifications(bloodType),
-      ]);
-
-      const processedData = processData(donationHistory, requests);
-      setData(processedData);
-      setLoading(false);
+      let requests, donations;
+      if (bloodType) {
+        requests = await getRequestsByBloodType(bloodType);
+        donations = await getDonationHistoryByBloodType(bloodType);
+      } else {
+        requests = await getAllRequests();
+        donations = await getAllDonationHistory();
+      }
+      processData(requests, donations);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setError("Failed to fetch data. Please try again.");
-      setLoading(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const processData = (donations, requests) => {
-    const dailyCounts = {};
-    const bloodTypeCounts = {};
-    let totalDonations = 0;
-    let totalRequests = 0;
-
-    donations.forEach((donation) => {
-      const date = new Date(donation.donation_date).toISOString().split("T")[0];
-      if (!dailyCounts[date]) dailyCounts[date] = { donations: 0, requests: 0 };
-      dailyCounts[date].donations++;
-
-      if (!bloodTypeCounts[donation.blood_type])
-        bloodTypeCounts[donation.blood_type] = { donations: 0, requests: 0 };
-      bloodTypeCounts[donation.blood_type].donations++;
-
-      totalDonations++;
-    });
-
-    requests.forEach((request) => {
-      const date = new Date(request.created_at).toISOString().split("T")[0];
-      if (!dailyCounts[date]) dailyCounts[date] = { donations: 0, requests: 0 };
-      dailyCounts[date].requests++;
-
-      if (!bloodTypeCounts[request.blood_type_requested])
-        bloodTypeCounts[request.blood_type_requested] = {
-          donations: 0,
-          requests: 0,
-        };
-      bloodTypeCounts[request.blood_type_requested].requests++;
-
-      totalRequests++;
-    });
-
-    const dailyData = Object.entries(dailyCounts)
-      .map(([date, counts]) => ({
-        date,
-        donations: counts.donations,
-        requests: counts.requests,
-      }))
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    const bloodTypeData = Object.entries(bloodTypeCounts).map(
-      ([bloodType, counts]) => ({
-        bloodType,
-        donations: counts.donations,
-        requests: counts.requests,
-      })
-    );
-
-    return {
-      dailyData,
-      bloodTypeData,
-      totalDonations,
-      totalRequests,
-    };
+  const processData = (requests, donations) => {
+    const requestCounts = countByDay(requests, "created_at");
+    const donationCounts = countByDay(donations, "donation_date");
+    setRequestData(requestCounts);
+    setDonationData(donationCounts);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const countByDay = (data, dateField) => {
+    const counts = {};
+    data.forEach((item) => {
+      const dateStr = item[dateField];
+      if (!dateStr) return; // Skip if date is null or undefined
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return; // Skip if date is invalid
+      const dayMonthYear = date.toISOString().split("T")[0]; // YYYY-MM-DD format
+      counts[dayMonthYear] = (counts[dayMonthYear] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date
+  };
+
+  const formatXAxisDate = (value) => {
+    const date = new Date(value);
+    return `${date.getDate()}/${date.getMonth() + 1}`; // DD/MM format
+  };
+
+  const chartOptions = {
+    chart: {
+      background: "transparent",
+      toolbar: { show: false },
+    },
+    colors: ["#4ade80", "#60a5fa"],
+    dataLabels: { enabled: false },
+    stroke: { curve: "smooth", width: 2 },
+    xaxis: {
+      type: "category",
+      categories: [
+        ...new Set([...requestData, ...donationData].map((item) => item.date)),
+      ],
+      labels: {
+        formatter: formatXAxisDate,
+        style: { colors: "#ffffff" },
+        rotate: -45,
+        rotateAlways: true,
+      },
+      tickAmount: 10, // Adjust this value to control the number of x-axis labels
+    },
+    yaxis: {
+      title: { text: "Count", style: { color: "#ffffff" } },
+      labels: { style: { colors: "#ffffff" } },
+    },
+    tooltip: {
+      theme: "dark",
+      x: {
+        formatter: (val) => new Date(val).toLocaleDateString(),
+      },
+      y: {
+        formatter: (y) => `${y.toFixed(0)} items`,
+      },
+    },
+    legend: {
+      labels: { colors: "#ffffff" },
+    },
+    grid: {
+      borderColor: "rgba(255, 255, 255, 0.1)",
+    },
+  };
+
+  const chartSeries = [
+    {
+      name: "Requests",
+      data: chartOptions.xaxis.categories.map(
+        (date) => requestData.find((item) => item.date === date)?.count || 0
+      ),
+    },
+    {
+      name: "Donations",
+      data: chartOptions.xaxis.categories.map(
+        (date) => donationData.find((item) => item.date === date)?.count || 0
+      ),
+    },
+  ];
 
   return (
-    <Box sx={{ width: "100%", height: "100%" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+    <div className="w-full bg-gradient-to-br from-[#5b5b5b] to-[#3d3d3d] p-6 rounded-lg shadow-lg">
+      <h2 className="text-3xl font-semibold text-green-700 mb-4 text-center">
+        Requests and Donations Chart
+      </h2>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mb: 2 }}>
         <TextField
-          label="Start Date"
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          label="End Date"
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-        />
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel>Blood Type</InputLabel>
-          <Select
-            value={bloodType}
-            label="Blood Type"
-            onChange={(e) => setBloodType(e.target.value)}
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="A+">A+</MenuItem>
-            <MenuItem value="A-">A-</MenuItem>
-            <MenuItem value="B+">B+</MenuItem>
-            <MenuItem value="B-">B-</MenuItem>
-            <MenuItem value="AB+">AB+</MenuItem>
-            <MenuItem value="AB-">AB-</MenuItem>
-            <MenuItem value="O+">O+</MenuItem>
-            <MenuItem value="O-">O-</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel>Graph Type</InputLabel>
-          <Select
-            value={graphType}
-            label="Graph Type"
-            onChange={(e) => setGraphType(e.target.value)}
-          >
-            <MenuItem value="line">Line</MenuItem>
-            <MenuItem value="bar">Bar</MenuItem>
-            <MenuItem value="area">Area</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      <Box sx={{ mb: 2 }}>
-        <p>Total Donations: {data.totalDonations}</p>
-        <p>Total Requests: {data.totalRequests}</p>
-      </Box>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart
-          data={data.dailyData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
+          select
+          label="Chart Type"
+          value={chartType}
+          onChange={(e) => setChartType(e.target.value)}
+          sx={{ minWidth: 120, bgcolor: "white", borderRadius: 1 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="donations"
-            stroke="#FFA500"
-            activeDot={{ r: 8 }}
-            name="Donation Count"
-          />
-          <Line
-            type="monotone"
-            dataKey="requests"
-            stroke="#4CAF50"
-            activeDot={{ r: 8 }}
-            name="Request Count"
-          />
-        </LineChart>
-      </ResponsiveContainer>
-      <Box sx={{ mt: 4 }}>
-        <h3>Counts by Blood Type</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Blood Type</th>
-              <th>Donations</th>
-              <th>Requests</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.bloodTypeData.map((item) => (
-              <tr key={item.bloodType}>
-                <td>{item.bloodType}</td>
-                <td>{item.donations}</td>
-                <td>{item.requests}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          {CHART_TYPES.map((type) => (
+            <MenuItem key={type} value={type}>
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          select
+          label="Blood Type"
+          value={bloodType}
+          onChange={(e) => setBloodType(e.target.value)}
+          sx={{ minWidth: 120, bgcolor: "white", borderRadius: 1 }}
+        >
+          <MenuItem value="">All</MenuItem>
+          {BLOOD_TYPES.map((type) => (
+            <MenuItem key={type} value={type}>
+              {type}
+            </MenuItem>
+          ))}
+        </TextField>
       </Box>
-    </Box>
+      {isLoading ? (
+        <div className="text-white text-center">Loading...</div>
+      ) : (
+        <ReactApexChart
+          type={chartType}
+          series={chartSeries}
+          options={chartOptions}
+          height={400}
+        />
+      )}
+    </div>
   );
 };
 

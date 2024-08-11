@@ -422,3 +422,45 @@ export const getDonorThoughts = async (donorId) => {
     throw error.response ? error.response.data : error.message;
   }
 };
+
+export const getAllRequests = async () => {
+  try {
+    const response = await api.get("/Requests/all");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all requests:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getRequestsByBloodType = async (bloodType) => {
+  try {
+    const response = await api.get(`/Requests/byBloodType/${bloodType}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching requests by blood type:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getAllDonationHistory = async () => {
+  try {
+    const response = await api.get("/donors/donation_history/all");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all donation history:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getDonationHistoryByBloodType = async (bloodType) => {
+  try {
+    const response = await api.get(
+      `/donors/donation_history/byBloodType/${bloodType}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching donation history by blood type:", error);
+    throw error.response ? error.response.data : error.message;
+  }
+};
